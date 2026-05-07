@@ -359,55 +359,61 @@
     .clickable-row:hover .expand-hint { opacity: 1; }
 
     /* ── RESPONSIVE ────────────────────────────────────────────── */
+    /* ≤900px — confirmed to fire on all phone/tablet viewports    */
     @media (max-width: 900px) {
-        .report-topbar { padding: 12px 24px; }
-        .topbar-center { display: none; }
-        .report-content { padding: 32px 24px 0; }
-        .report-footer { padding: 20px 24px 0; }
-        .summary-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-
-    @media (max-width: 640px) {
-        .report-topbar { padding: 9px 12px; gap: 6px; }
+        /* Topbar */
+        .report-topbar { padding: 9px 14px; gap: 6px; }
         .topbar-center { display: none; }
         .topbar-right { gap: 5px; }
-        .btn-print, .btn-export { font-size: 0.5rem; padding: 5px 8px; letter-spacing: 0.5px; }
-        .report-content { padding: 16px 12px 0; }
-        .report-footer { flex-direction: column; gap: 4px; text-align: center; padding: 16px 12px 0; }
-        .report-hero { flex-direction: column; gap: 12px; align-items: flex-start; padding-bottom: 20px; margin-bottom: 20px; }
+        .btn-print, .btn-export { font-size: 0.5rem; padding: 5px 9px; letter-spacing: 0.5px; }
+
+        /* Layout */
+        .report-content { padding: 20px 16px 0; }
+        .report-footer { padding: 16px 16px 0; }
+
+        /* Hero */
+        .report-hero { flex-direction: column; gap: 12px; align-items: flex-start; padding-bottom: 18px; margin-bottom: 18px; }
         .report-eyebrow { font-size: 0.5rem; margin-bottom: 6px; }
-        .report-title { font-size: 1.2rem; }
-        .verdict-badge { align-self: flex-start; padding: 10px 16px; min-width: auto; }
-        .verdict-value { font-size: 1.1rem; }
-        .summary-grid { grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 24px; }
-        .sc-label { font-size: 0.5rem; margin-bottom: 8px; }
-        .sc-value { font-size: 1.7rem; }
-        .sc-sub { font-size: 0.5rem; }
+        .report-title { font-size: clamp(1.15rem, 4vw, 1.9rem); }
+        .report-meta { font-size: 0.55rem; }
+        .verdict-badge { align-self: flex-start; padding: 10px 18px; min-width: auto; }
+        .verdict-label { font-size: 0.44rem; }
+        .verdict-value { font-size: clamp(1rem, 4vw, 1.5rem); }
+
+        /* Summary grid */
+        .summary-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 24px; }
         .stat-card { padding: 14px 12px 10px; }
-        .sec-header { margin-top: 24px; margin-bottom: 10px; }
+        .sc-label { font-size: 0.49rem; letter-spacing: 1.5px; margin-bottom: 8px; }
+        .sc-value { font-size: clamp(1.4rem, 4.5vw, 2.6rem); }
+        .sc-sub { font-size: 0.49rem; margin-top: 5px; }
+
+        /* Section headers */
+        .sec-header { margin-top: 28px; margin-bottom: 10px; }
         .sec-title { font-size: 0.6rem; letter-spacing: 2px; }
-        /* Scrollable tables on small screens */
+        .sec-num { font-size: 0.5rem; }
+
+        /* Report footer */
+        .report-footer { flex-direction: column; gap: 4px; text-align: center; }
+        .footer-left, .footer-right { font-size: 0.5rem; }
+
+        /* Scrollable tables */
         .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         table { min-width: 480px; }
         #batch-content .table-wrap table { min-width: 640px; }
-        /* viz boxes compact */
-        .viz-box { width: 52px; height: 52px; }
-        .viz-lbl { font-size: 0.4rem; }
+
+        /* Viz boxes */
+        .viz-box { width: 56px; height: 56px; }
+        .viz-lbl { font-size: 0.42rem; }
+
         /* Detail modal */
         #detail-images { flex-direction: column; align-items: center; }
         .detail-img-col { max-width: 100%; width: 100%; }
-        #detail-info { padding: 0 12px 14px; }
-        #detail-header { padding: 10px 12px; }
+        #detail-info { padding: 0 14px 16px; }
+        #detail-header { padding: 10px 14px; }
         #detail-title { font-size: 0.65rem; }
         .detail-info-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; padding-top: 12px; }
         .detail-stat { padding: 10px 12px; }
         .detail-stat-val { font-size: 0.78rem; }
-    }
-
-    @media (max-width: 420px) {
-        .report-topbar .btn-print { font-size: 0.56rem; padding: 6px 10px; letter-spacing: 0.5px; }
-        .sc-value { font-size: 1.7rem; }
-        .report-eyebrow { font-size: 0.5rem; }
     }
 
     /* ── PRINT ──────────────────────────────────────────────────── */
