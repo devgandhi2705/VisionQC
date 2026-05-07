@@ -333,13 +333,15 @@ def batch():
             total_defects += 1
 
         # Thumbnail
-        thumb_h = 120
+        thumb_h = 360
         scale   = thumb_h / img_bgr.shape[0]
         thumb   = cv2.resize(img_bgr, (int(img_bgr.shape[1] * scale), thumb_h))
         _, buf  = cv2.imencode(".jpg", thumb, [cv2.IMWRITE_JPEG_QUALITY, 75])
         thumb_b64 = base64.b64encode(buf).decode("utf-8")
 
-        heatmap_b64 = make_heatmap_b64(amap_full)
+        hm_small    = cv2.resize(amap_full, (512, 512))
+        _n          = ((hm_small - hm_small.min()) / (hm_small.max() - hm_small.min() + 1e-8) * 255).astype(np.uint8)
+        heatmap_b64 = encode_b64(cv2.applyColorMap(_n, cv2.COLORMAP_JET), ".jpg")
 
         results.append({
             "filename":   f.filename,

@@ -308,6 +308,55 @@
     .footer-left { font-family: var(--mono); font-size: 0.58rem; color: var(--t3); letter-spacing: 2px; text-transform: uppercase; }
     .footer-right { font-family: var(--mono); font-size: 0.55rem; color: var(--t4); letter-spacing: 1px; }
 
+    /* ── DETAIL MODAL ───────────────────────────────────────────── */
+    #detail-modal {
+        display: none; position: fixed; inset: 0; z-index: 1000;
+        background: rgba(0,0,0,0.84);
+        align-items: center; justify-content: center; padding: 20px;
+    }
+    #detail-modal.open { display: flex; }
+    #detail-panel {
+        background: var(--panel); border: 1px solid var(--border-mid);
+        border-radius: 12px; width: min(920px, 95vw);
+        max-height: 92vh; overflow-y: auto;
+        box-shadow: 0 40px 80px rgba(0,0,0,0.7);
+        scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+    }
+    #detail-header {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 16px 22px; border-bottom: 1px solid var(--border);
+        position: sticky; top: 0; background: var(--panel); z-index: 1;
+    }
+    #detail-title { font-family: var(--mono); font-size: 0.78rem; font-weight: 700; letter-spacing: 2px; color: var(--t1); }
+    #detail-close {
+        background: transparent; border: 1px solid var(--border);
+        color: var(--t2); width: 30px; height: 30px; border-radius: 50%;
+        cursor: pointer; font-size: 1rem;
+        display: flex; align-items: center; justify-content: center;
+        transition: all 0.2s;
+    }
+    #detail-close:hover { border-color: var(--red); color: var(--red); background: rgba(239,68,68,0.1); }
+    #detail-images { display: flex; gap: 16px; padding: 22px; justify-content: center; flex-wrap: wrap; }
+    .detail-img-col { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; min-width: 200px; max-width: 420px; }
+    .detail-img-col img { width: 100%; border-radius: 8px; border: 1px solid var(--border); object-fit: contain; background: #000; }
+    .detail-img-col span { font-family: var(--mono); font-size: 0.52rem; letter-spacing: 2px; text-transform: uppercase; color: var(--t3); }
+    .detail-img-col span.heat { color: var(--purple); }
+    #detail-info { padding: 0 22px 22px; border-top: 1px solid var(--border); }
+    .detail-info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; padding-top: 18px; }
+    .detail-stat { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 12px 16px; }
+    .detail-stat-label { font-family: var(--mono); font-size: 0.5rem; letter-spacing: 2px; text-transform: uppercase; color: var(--t3); margin-bottom: 6px; }
+    .detail-stat-val { font-family: var(--mono); font-size: 0.9rem; font-weight: 700; color: var(--t1); word-break: break-all; }
+    .detail-stat-val.red   { color: var(--red);   text-shadow: 0 0 16px rgba(239,68,68,0.3); }
+    .detail-stat-val.green { color: var(--green); text-shadow: 0 0 16px rgba(16,185,129,0.3); }
+    .detail-dets { margin-top: 16px; }
+    .detail-dets-title { font-family: var(--mono); font-size: 0.55rem; letter-spacing: 2px; text-transform: uppercase; color: var(--t3); margin-bottom: 10px; }
+
+    /* Row hover hint */
+    .clickable-row { cursor: pointer; }
+    .clickable-row:hover td { background: rgba(59,130,246,0.07) !important; }
+    .expand-hint { font-family: var(--mono); font-size: 0.48rem; color: var(--blue); letter-spacing: 1px; display: block; margin-top: 5px; opacity: 0; transition: opacity 0.2s; }
+    .clickable-row:hover .expand-hint { opacity: 1; }
+
     /* ── PRINT ──────────────────────────────────────────────────── */
     @media print {
         body { background: #fff; color: #000; background-image: none; padding: 0; }
@@ -464,7 +513,119 @@
 
 </div>
 
+<!-- ── DETAIL MODAL ──────────────────────────────────────────────── -->
+<div id="detail-modal">
+    <div id="detail-panel">
+        <div id="detail-header">
+            <span id="detail-title">Object Detail</span>
+            <button id="detail-close" onclick="closeModal()" title="Close (Esc)">✕</button>
+        </div>
+        <div id="detail-images">
+            <div class="detail-img-col" id="detail-preview-col">
+                <img id="detail-preview-img" src="" alt="preview">
+                <span>Preview</span>
+            </div>
+            <div class="detail-img-col" id="detail-heatmap-col">
+                <img id="detail-heatmap-img" src="" alt="anomaly map">
+                <span class="heat">Anomaly Map</span>
+            </div>
+        </div>
+        <div id="detail-info">
+            <div class="detail-info-grid" id="detail-stats-grid"></div>
+            <div class="detail-dets" id="detail-dets-section" style="display:none">
+                <div class="detail-dets-title">YOLO Detections</div>
+                <div id="detail-dets-table"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+function closeModal() {
+    document.getElementById('detail-modal').classList.remove('open');
+}
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+});
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('detail-modal').addEventListener('click', e => {
+        if (e.target === document.getElementById('detail-modal')) closeModal();
+    });
+});
+
+function openDetail(idx) {
+    const results = window._batchResults;
+    if (!results || idx >= results.length) return;
+    const r = results[idx];
+    const isDefect = r.status === 'DEFECTIVE';
+
+    document.getElementById('detail-title').textContent =
+        `#${String(idx+1).padStart(3,'0')} — ${r.filename || ''}`;
+
+    const previewCol = document.getElementById('detail-preview-col');
+    const heatmapCol = document.getElementById('detail-heatmap-col');
+    if (r.thumb) {
+        document.getElementById('detail-preview-img').src = `data:image/jpeg;base64,${r.thumb}`;
+        previewCol.style.display = '';
+    } else {
+        previewCol.style.display = 'none';
+    }
+    if (r.heatmap) {
+        document.getElementById('detail-heatmap-img').src = `data:image/jpeg;base64,${r.heatmap}`;
+        heatmapCol.style.display = '';
+    } else {
+        heatmapCol.style.display = 'none';
+    }
+
+    const scoreVal = r.score ?? 0;
+    document.getElementById('detail-stats-grid').innerHTML = `
+        <div class="detail-stat">
+            <div class="detail-stat-label">Status</div>
+            <div class="detail-stat-val ${isDefect ? 'red' : 'green'}">${r.status || '—'}</div>
+        </div>
+        <div class="detail-stat">
+            <div class="detail-stat-label">Anomaly Score</div>
+            <div class="detail-stat-val ${isDefect ? 'red' : 'green'}">${scoreVal.toFixed(4)}</div>
+        </div>
+        <div class="detail-stat">
+            <div class="detail-stat-label">Objects Detected</div>
+            <div class="detail-stat-val">${r.objects ?? (r.detections || []).length}</div>
+        </div>
+        <div class="detail-stat">
+            <div class="detail-stat-label">Threshold</div>
+            <div class="detail-stat-val">0.5000</div>
+        </div>
+    `;
+
+    const dets = r.detections || [];
+    const detsSection = document.getElementById('detail-dets-section');
+    if (dets.length > 0) {
+        detsSection.style.display = '';
+        document.getElementById('detail-dets-table').innerHTML = `
+            <table class="mini-det-table">
+                <thead><tr><th>#</th><th>Label</th><th>Confidence</th><th>BBox [x1, y1, x2, y2]</th></tr></thead>
+                <tbody>${dets.map((d, i) => {
+                    const box = d.box || [];
+                    return `<tr>
+                        <td><span class="obj-id">#${String(i+1).padStart(3,'0')}</span></td>
+                        <td><span class="type-tag" style="font-size:0.6rem;">${(d.label||'?').toUpperCase()}</span></td>
+                        <td>
+                            <div class="bar-row">
+                                <div class="bar-track"><div class="bar-fill conf" style="width:${Math.min((d.conf||0)*100,100)}%"></div></div>
+                                <span class="bar-num">${((d.conf||0)*100).toFixed(1)}%</span>
+                            </div>
+                        </td>
+                        <td><span class="bbox-val">[${box.join(', ')}]</span></td>
+                    </tr>`;
+                }).join('')}</tbody>
+            </table>`;
+    } else {
+        detsSection.style.display = 'none';
+    }
+
+    document.getElementById('detail-modal').classList.add('open');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const rawData = localStorage.getItem('latest_inspection_report');
     if (!rawData) {
@@ -521,6 +682,7 @@ document.addEventListener('DOMContentLoaded', () => {
             else               { verdict.textContent = 'FAIL'; verdict.style.color = 'var(--red)'; }
         }
 
+        window._batchResults = results;
         const tbody = document.getElementById('batch-tbody');
         if (results.length === 0) {
             tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#475569;padding:28px;font-family:'JetBrains Mono',monospace;font-size:0.65rem;letter-spacing:2px;">NO RESULTS</td></tr>`;
@@ -538,7 +700,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ? `<div class="viz-col"><div class="viz-box"><img src="data:image/jpeg;base64,${r.thumb}" alt="preview"></div><span class="viz-lbl">Preview</span></div>`
                     : '';
                 const heatHTML = r.heatmap
-                    ? `<div class="viz-col"><div class="viz-box heat-box"><img src="data:image/png;base64,${r.heatmap}" alt="heatmap"></div><span class="viz-lbl heat">Anomaly Map</span></div>`
+                    ? `<div class="viz-col"><div class="viz-box heat-box"><img src="data:image/jpeg;base64,${r.heatmap}" alt="heatmap"></div><span class="viz-lbl heat">Anomaly Map</span></div>`
                     : '';
                 const vizHTML = `<div class="viz-row">${thumbHTML}${heatHTML}</div>`;
 
@@ -563,12 +725,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     : `<span style="color:var(--t3);font-family:var(--mono);font-size:0.62rem;">No detections</span>`;
 
                 const row = document.createElement('tr');
-                if (isDefect) row.className = 'row-defect';
+                row.className = (isDefect ? 'row-defect ' : '') + 'clickable-row';
+                row.onclick = () => openDetail(idx);
                 row.innerHTML = `
                     <td>
                         <div class="batch-img-cell">
                             <span class="obj-id">#${String(idx+1).padStart(3,'0')}</span>
                             <span class="batch-img-fname">${r.error ? `<span style="color:var(--red)">${r.error}</span>` : r.filename}</span>
+                            <span class="expand-hint">↗ Click to expand</span>
                         </div>
                     </td>
                     <td>${vizHTML}</td>
@@ -666,10 +830,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const lbl         = (obj.label || 'unknown').toLowerCase();
                 const count       = anomTypeCounts[lbl] || 1;
                 const cropHTML = obj.visual_data
-                    ? `<div class="viz-col"><div class="viz-box"><img src="data:image/jpeg;base64,${obj.visual_data}" alt="crop"></div><span class="viz-lbl">Crop</span></div>`
+                    ? `<div class="viz-col"><div class="viz-box"><img src="data:image/jpeg;base64,${obj.visual_data}" alt="crop" onclick="openModal(this.src)"></div><span class="viz-lbl">Crop</span></div>`
                     : '';
                 const heatHTML = obj.heatmap_data
-                    ? `<div class="viz-col"><div class="viz-box heat-box"><img src="data:image/png;base64,${obj.heatmap_data}" alt="heatmap"></div><span class="viz-lbl heat">Anomaly Map</span></div>`
+                    ? `<div class="viz-col"><div class="viz-box heat-box"><img src="data:image/png;base64,${obj.heatmap_data}" alt="heatmap" onclick="openModal(this.src)"></div><span class="viz-lbl heat">Anomaly Map</span></div>`
                     : `<span style="color:#475569;font-size:0.62rem;font-family:monospace;">No heatmap</span>`;
                 const row = document.createElement('tr');
                 if (isDefect) row.className = 'row-defect';
