@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VisionQC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+    /* ── Design Tokens ─────────────────────────────────────────── */
+    :root {
+        --bg:       #050b14;
+        --surface:  #0a1628;
+        --panel:    #0c1d36;
+        --border:   rgba(59,130,246,0.13);
+        --border-m: rgba(59,130,246,0.26);
+
+        --blue:     #3b82f6;
+        --blue-s:   rgba(59,130,246,0.12);
+        --blue-g:   rgba(59,130,246,0.22);
+        --cyan:     #06b6d4;
+        --cyan-s:   rgba(6,182,212,0.12);
+        --green:    #10b981;
+        --green-s:  rgba(16,185,129,0.12);
+        --red:      #ef4444;
+        --red-s:    rgba(239,68,68,0.12);
+        --amber:    #f59e0b;
+        --amber-s:  rgba(245,158,11,0.12);
+        --purple:   #8b5cf6;
+        --purple-s: rgba(139,92,246,0.12);
+
+        --t1: #e2e8f0;
+        --t2: #94a3b8;
+        --t3: #475569;
+        --t4: #1e3a5f;
+
+        --mono: 'JetBrains Mono', monospace;
+        --sans: 'Inter', sans-serif;
+        --radius: 8px;
+    }
+
+    /* ── Reset ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        background: var(--bg);
+        color: var(--t1);
+        font-family: var(--sans);
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    /* ── HEADER ────────────────────────────────────────────────── */
+    .app-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        height: 52px;
+        border-bottom: 1px solid var(--border);
+        background: rgba(5,11,20,0.9);
+        backdrop-filter: blur(12px);
+        flex-shrink: 0;
+        z-index: 50;
+    }
+    .header-left { display: flex; align-items: center; gap: 16px; }
+    .back-btn {
+        display: flex; align-items: center; gap: 6px;
+        color: var(--t3); text-decoration: none;
+        font-family: var(--mono); font-size: 0.65rem; font-weight: 500;
+        letter-spacing: 1px; padding: 5px 10px;
+        border: 1px solid var(--border); border-radius: 5px;
+        transition: all 0.2s;
+    }
+    .back-btn:hover { color: var(--t1); border-color: var(--border-m); }
+    .header-brand { display: flex; align-items: center; gap: 8px; }
+    .brand-icon {
+        width: 22px; height: 22px;
+        background: linear-gradient(135deg, var(--blue), var(--cyan));
+        border-radius: 5px;
+        display: flex; align-items: center; justify-content: center;
+        font-family: var(--mono); font-size: 0.5rem; font-weight: 700; color: #fff;
+    }
+    .brand-name {
+        font-family: var(--mono); font-size: 0.8rem; font-weight: 700;
+        color: var(--t1); letter-spacing: 1px;
+    }
+    .brand-version { font-family: var(--mono); font-size: 0.55rem; color: var(--t3); }
+
+    .header-center {
+        font-family: var(--mono); font-size: 0.65rem;
+        letter-spacing: 3px; text-transform: uppercase;
+        color: var(--t3);
+    }
+    .header-right { display: flex; align-items: center; gap: 16px; }
+    .backend-status { display: flex; align-items: center; gap: 6px; }
+    .status-dot {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: var(--t3);
+        transition: background 0.4s, box-shadow 0.4s;
+    }
+    .status-dot.ready  { background: var(--green);  box-shadow: 0 0 6px var(--green);  animation: pulse 2s ease-in-out infinite; }
+    .status-dot.partial{ background: var(--amber);  box-shadow: 0 0 6px var(--amber);  animation: pulse 2s ease-in-out infinite; }
+    .status-dot.offline{ background: var(--red);    box-shadow: 0 0 4px var(--red); }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .status-dot-label { font-family: var(--mono); font-size: 0.58rem; color: var(--t3); letter-spacing: 1px; }
+    #liveClock { font-family: var(--mono); font-size: 0.75rem; color: var(--cyan); font-weight: 600; min-width: 70px; text-align: right; }
+
+    /* ── LAYOUT ────────────────────────────────────────────────── */
+    .app-body {
+        display: grid;
+        grid-template-columns: 280px 1fr 300px;
+        flex: 1;
+        min-height: 0;
+        gap: 0;
+    }
+
+    /* ── PANELS ────────────────────────────────────────────────── */
+    .side-panel {
+        border-right: 1px solid var(--border);
+        background: rgba(10,22,44,0.5);
+        display: flex;
+        flex-direction: column;
+        padding: 16px;
+        gap: 4px;
+        overflow-y: auto;
+        scrollbar-width: none;
+    }
+    .side-panel:last-child { border-right: none; border-left: 1px solid var(--border); }
+    .side-panel::-webkit-scrollbar { display: none; }
+
+    .panel-section { margin-bottom: 10px; }
+    .panel-label {
+        font-family: var(--mono); font-size: 0.55rem; font-weight: 600;
+        letter-spacing: 3px; text-transform: uppercase;
+        color: var(--t3); padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 12px;
+    }
+
+    /* ── BUTTONS ────────────────────────────────────────────────── */
+    .hud-btn {
+        width: 100%; padding: 10px 14px; margin-bottom: 8px;
+        background: transparent; border: 1px solid var(--border-m);
+        color: var(--t2); font-family: var(--mono); font-size: 0.7rem;
+        font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
+        cursor: pointer; border-radius: var(--radius);
+        transition: all 0.2s; display: block; width: 100%;
+        text-align: center;
+    }
+    .hud-btn:hover { border-color: var(--blue); color: var(--blue); background: var(--blue-s); }
+    .hud-btn:disabled { opacity: 0.3; cursor: not-allowed; pointer-events: none; }
+
+    .hud-btn.primary {
+        background: linear-gradient(135deg, var(--blue), #2563eb);
+        border-color: transparent; color: #fff;
+        box-shadow: 0 0 0 1px rgba(59,130,246,0.3), 0 4px 16px rgba(59,130,246,0.2);
+    }
+    .hud-btn.primary:hover { box-shadow: 0 0 0 1px rgba(59,130,246,0.5), 0 6px 20px rgba(59,130,246,0.3); }
+    .hud-btn.secondary { border-color: rgba(245,158,11,0.4); color: var(--amber); }
+    .hud-btn.secondary:hover { background: var(--amber-s); border-color: var(--amber); }
+    .hud-btn.danger    { border-color: rgba(239,68,68,0.3); color: var(--red); font-size: 0.65rem; }
+    .hud-btn.danger:hover { background: var(--red-s); border-color: var(--red); }
+    .hud-btn.success   { border-color: rgba(16,185,129,0.35); color: var(--green); margin-top: auto; }
+    .hud-btn.success:hover { background: var(--green-s); border-color: var(--green); }
+
+    /* ── PIPELINE STEPS ─────────────────────────────────────────── */
+    .model-badge {
+        display: flex; align-items: center; gap: 7px;
+        font-family: var(--mono); font-size: 0.58rem; font-weight: 600;
+        letter-spacing: 1.5px; text-transform: uppercase;
+        padding: 6px 10px; border-radius: 5px; border: 1px solid;
+        margin-bottom: 8px;
+    }
+    .model-badge.yolo       { border-color: rgba(59,130,246,0.3); color: var(--blue); background: var(--blue-s); }
+    .model-badge.efficientad{ border-color: rgba(139,92,246,0.3); color: var(--purple); background: var(--purple-s); }
+    .model-badge .bdot {
+        width: 5px; height: 5px; border-radius: 50%;
+        background: currentColor; animation: pulse 2s infinite;
+    }
+
+    .pipeline-step {
+        display: flex; align-items: center; gap: 8px;
+        font-family: var(--mono); font-size: 0.62rem;
+        color: var(--t3); padding: 5px 8px; border-radius: 5px;
+        border: 1px solid transparent; margin-bottom: 6px;
+        transition: all 0.3s;
+    }
+    .pipeline-step .sdot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+    .pipeline-step.active { color: var(--amber); border-color: rgba(245,158,11,0.25); background: var(--amber-s); }
+    .pipeline-step.done   { color: var(--green); border-color: rgba(16,185,129,0.25); background: var(--green-s); }
+
+    /* ── PROGRESS BARS ──────────────────────────────────────────── */
+    .progress-wrap { height: 2px; background: rgba(255,255,255,0.05); border-radius: 99px; overflow: hidden; margin-bottom: 12px; }
+    .progress-fill { height: 100%; width: 0%; border-radius: 99px; transition: width 0.4s ease; background: linear-gradient(90deg, var(--blue), var(--cyan)); }
+    .progress-fill.amber { background: linear-gradient(90deg, var(--amber), #fcd34d); }
+
+    /* ── FILE INPUT HIDDEN ──────────────────────────────────────── */
+    .hidden { display: none; }
+
+
+    /* ── LOG BOX ────────────────────────────────────────────────── */
+    .log-box {
+        flex: 1; overflow-y: auto; min-height: 80px; max-height: 200px;
+        background: rgba(0,0,0,0.3);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 10px;
+        scrollbar-width: thin;
+        scrollbar-color: var(--border) transparent;
+    }
+    .log-entry {
+        font-family: var(--mono); font-size: 0.6rem;
+        line-height: 1.6; padding: 2px 0 2px 8px;
+        border-left: 2px solid var(--t4);
+        color: var(--t3); margin-bottom: 4px;
+    }
+    .log-entry.ok   { border-left-color: var(--green); color: rgba(16,185,129,0.8); }
+    .log-entry.warn { border-left-color: var(--amber); color: rgba(245,158,11,0.8); }
+    .log-entry.err  { border-left-color: var(--red);   color: rgba(239,68,68,0.8); }
+
+    /* ── SEPARATOR ──────────────────────────────────────────────── */
+    .sep { height: 1px; background: var(--border); margin: 8px 0 14px; }
+
+    /* ── CENTER VIEWPORT ────────────────────────────────────────── */
+    .viewport-panel {
+        position: relative;
+        background: #020810;
+        display: flex; flex-direction: column;
+        overflow: hidden;
+    }
+    .viewport-header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 8px 14px;
+        border-bottom: 1px solid var(--border);
+        background: rgba(5,11,20,0.7);
+        flex-shrink: 0;
+    }
+    .vp-label { font-family: var(--mono); font-size: 0.58rem; color: var(--t3); letter-spacing: 2px; text-transform: uppercase; }
+    .vp-status { font-family: var(--mono); font-size: 0.6rem; color: var(--t3); }
+
+    .viewport-inner {
+        flex: 1; position: relative;
+        display: flex; justify-content: center; align-items: center;
+        overflow: hidden;
+    }
+
+    /* Corner brackets */
+    .corner { position: absolute; width: 18px; height: 18px; border-color: rgba(59,130,246,0.25); border-style: solid; z-index: 2; }
+    .corner.tl { top: 12px; left: 12px; border-width: 1px 0 0 1px; }
+    .corner.tr { top: 12px; right: 12px; border-width: 1px 1px 0 0; }
+    .corner.bl { bottom: 12px; left: 12px; border-width: 0 0 1px 1px; }
+    .corner.br { bottom: 12px; right: 12px; border-width: 0 1px 1px 0; }
+
+    #placeholderText {
+        font-family: var(--mono); font-size: 0.75rem; color: var(--t4);
+        letter-spacing: 4px; text-transform: uppercase;
+        position: absolute; z-index: 1;
+        text-align: center;
+    }
+    #placeholderText span { display: block; font-size: 0.55rem; margin-top: 8px; color: var(--t4); letter-spacing: 2px; }
+
+    #activeImage, #webcamFeed {
+        max-width: 95%; max-height: 95%;
+        z-index: 5; display: none;
+        border-radius: 4px;
+    }
+    #overlayCanvas {
+        position: absolute; z-index: 6;
+        pointer-events: none;
+        left: 50%; transform: translateX(-50%);
+    }
+
+    /* Scan line */
+    .scan-line {
+        position: absolute; width: 100%; height: 1px;
+        background: var(--blue);
+        box-shadow: 0 0 12px var(--blue), 0 0 24px rgba(59,130,246,0.3);
+        top: -10px; z-index: 10; pointer-events: none; opacity: 0;
+    }
+    .scan-line.active  { opacity: 1; animation: scanLoop 2.5s linear infinite; }
+    .scan-line.anomaly { background: var(--amber); box-shadow: 0 0 12px var(--amber), 0 0 24px rgba(245,158,11,0.3); }
+    @keyframes scanLoop { 0%{top:0%} 100%{top:100%} }
+
+    /* Camera capture overlay */
+    #captureOverlay {
+        display: none; position: absolute;
+        bottom: 20px; left: 50%; transform: translateX(-50%);
+        z-index: 20; flex-direction: column; align-items: center; gap: 8px;
+    }
+    #captureOverlay.visible { display: flex; }
+    #btnCapture {
+        background: var(--blue); color: #fff; border: none;
+        font-family: var(--mono); font-weight: 700; font-size: 0.78rem;
+        padding: 10px 28px; cursor: pointer; letter-spacing: 2px;
+        text-transform: uppercase; border-radius: 6px;
+        box-shadow: 0 0 24px rgba(59,130,246,0.4);
+        transition: all 0.2s;
+    }
+    #btnCapture:hover { box-shadow: 0 0 36px rgba(59,130,246,0.6); transform: scale(1.03); }
+    #captureHint { font-family: var(--mono); font-size: 0.58rem; color: var(--t3); letter-spacing: 1px; }
+    @keyframes flashCapture { 0%{opacity:1} 30%{opacity:0.1} 100%{opacity:1} }
+    .flash { animation: flashCapture 0.35s ease; }
+
+    /* ── RIGHT PANEL — TELEMETRY ────────────────────────────────── */
+    .stat-row {
+        display: flex; justify-content: space-between; align-items: baseline;
+        margin-bottom: 10px; font-size: 0.83rem;
+    }
+    .stat-row span:first-child { color: var(--t3); font-size: 0.75rem; }
+    .stat-val { font-family: var(--mono); font-weight: 700; color: var(--t1); }
+    .stat-val.green { color: var(--green); }
+    .stat-val.red   { color: var(--red); }
+    .stat-val.blue  { color: var(--blue); }
+    .stat-val.amber { color: var(--amber); }
+
+    #statusIndicator {
+        font-family: var(--mono); font-size: 0.65rem; font-weight: 600;
+        letter-spacing: 2px; text-transform: uppercase;
+        padding: 7px 12px; border-radius: 5px;
+        border: 1px solid var(--border-m);
+        color: var(--t2); background: var(--blue-s);
+        text-align: center; margin-bottom: 16px;
+    }
+
+    .threshold-display {
+        background: rgba(0,0,0,0.3);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 10px 12px;
+        margin-bottom: 10px;
+    }
+    .threshold-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .threshold-label { font-family: var(--mono); font-size: 0.58rem; color: var(--t3); letter-spacing: 1.5px; text-transform: uppercase; }
+    .threshold-val { font-family: var(--mono); font-size: 0.75rem; font-weight: 700; color: var(--amber); }
+    .threshold-track {
+        height: 3px; background: rgba(255,255,255,0.05);
+        border-radius: 99px; overflow: hidden; position: relative;
+    }
+    .threshold-fill { height: 100%; width: 50%; background: linear-gradient(90deg, var(--green), var(--amber)); border-radius: 99px; }
+    .threshold-tick {
+        position: absolute; top: -4px; bottom: -4px; width: 2px;
+        background: var(--amber); border-radius: 1px; left: 50%;
+    }
+
+    /* ── REPORT BUTTON WRAPPER ──────────────────────────────────── */
+    /* ── Model info panel ───────────────────────────────────────── */
+    .model-info-grid { display: grid; gap: 6px; }
+    .mi-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.78rem; gap: 8px; }
+    .mi-key { color: var(--t3); font-size: 0.72rem; flex-shrink: 0; }
+    .mi-val { font-family: var(--mono); font-size: 0.68rem; font-weight: 600; color: var(--t1); text-align: right; }
+    .mi-val.green { color: var(--green); }
+    .mi-val.cyan  { color: var(--cyan); }
+    .mi-divider { height: 1px; background: var(--border); margin: 4px 0; }
+
+    .report-btn-wrap { margin-top: auto; padding-top: 10px; }
+
+    /* ── Batch panel (in left sidebar) ─────────────────────────── */
+    .batch-drop-zone {
+        position: relative; overflow: hidden;
+        border: 1.5px dashed var(--border-m);
+        border-radius: var(--radius); padding: 18px;
+        text-align: center; cursor: pointer;
+        transition: border-color 0.2s, background 0.2s;
+        margin-bottom: 12px;
+    }
+    .batch-drop-zone:hover, .batch-drop-zone.dragging {
+        border-color: var(--blue); background: var(--blue-s);
+    }
+    .batch-drop-zone p { font-family: var(--mono); font-size: 0.65rem; color: var(--t3); margin-top: 4px; }
+    .batch-drop-zone strong { color: var(--t2); }
+    #batchFileInput {
+        position: absolute; inset: 0; width: 100%; height: 100%;
+        opacity: 0; cursor: pointer; z-index: 2;
+    }
+    .batch-run-btn {
+        width: 100%;
+        font-family: var(--mono); font-size: 0.65rem; font-weight: 600;
+        letter-spacing: 1.5px; text-transform: uppercase;
+        padding: 8px 0; border-radius: var(--radius);
+        background: linear-gradient(135deg, var(--blue), #2563eb);
+        color: #fff; border: none; cursor: pointer; margin-bottom: 10px;
+        transition: opacity 0.2s;
+    }
+    .batch-run-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .batch-progress-wrap { height: 2px; background: rgba(255,255,255,0.05); border-radius: 99px; overflow: hidden; margin-bottom: 14px; }
+    .batch-progress-fill { height: 100%; width: 0%; border-radius: 99px; transition: width 0.3s; background: linear-gradient(90deg, var(--blue), var(--cyan)); }
+    .batch-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 10px;
+        max-height: 240px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: var(--border) transparent;
+    }
+    .batch-card {
+        background: var(--panel); border: 1px solid var(--border);
+        border-radius: 6px; overflow: hidden;
+        transition: border-color 0.2s;
+    }
+    .batch-card.defect { border-color: rgba(239,68,68,0.35); background: rgba(239,68,68,0.04); }
+    .batch-card.ok     { border-color: rgba(16,185,129,0.25); }
+    .batch-card img    { width: 100%; height: 80px; object-fit: cover; display: block; }
+    .batch-card-info   { padding: 6px 8px; }
+    .batch-card-name   { font-family: var(--mono); font-size: 0.5rem; color: var(--t3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; }
+    .batch-card-score  { font-family: var(--mono); font-size: 0.62rem; font-weight: 700; }
+    .batch-card-score.red   { color: var(--red); }
+    .batch-card-score.green { color: var(--green); }
+    .batch-summary {
+        font-family: var(--mono); font-size: 0.65rem; color: var(--t2);
+        margin-bottom: 10px; padding: 8px 12px;
+        border: 1px solid var(--border); border-radius: 5px;
+        background: rgba(0,0,0,0.2);
+        display: none;
+    }
+    .batch-summary.show { display: block; }
+
+    /* ── Drag-and-drop overlay ──────────────────────────────────── */
+    #drop-overlay {
+        position: absolute; inset: 0; z-index: 30;
+        display: none; flex-direction: column;
+        align-items: center; justify-content: center; gap: 12px;
+        background: rgba(5,11,20,0.88);
+        border: 2px dashed var(--blue);
+        pointer-events: none;
+    }
+    #drop-overlay.active { display: flex; }
+    .drop-icon { font-size: 2.4rem; }
+    .drop-label {
+        font-family: var(--mono); font-size: 0.78rem; font-weight: 600;
+        letter-spacing: 2px; text-transform: uppercase; color: var(--blue);
+    }
+    .drop-sub { font-family: var(--mono); font-size: 0.6rem; color: var(--t3); letter-spacing: 1px; }
+
+    /* ── Keyboard shortcut hints ────────────────────────────────── */
+    .kbd-hints { display: flex; gap: 8px; flex-wrap: wrap; }
+    .kbd { display: inline-flex; align-items: center; gap: 5px; }
+    .kbd-key {
+        font-family: var(--mono); font-size: 0.55rem; font-weight: 700;
+        padding: 2px 6px; border-radius: 4px;
+        border: 1px solid var(--border-m); background: rgba(59,130,246,0.08);
+        color: var(--t2); line-height: 1.4;
+    }
+    .kbd-label { font-size: 0.6rem; color: var(--t3); }
+
+    /* ── Toast notification ─────────────────────────────────────── */
+    #kbd-toast {
+        position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+        background: var(--panel); border: 1px solid var(--border-m);
+        color: var(--t1); font-family: var(--mono); font-size: 0.65rem;
+        padding: 8px 18px; border-radius: 6px; letter-spacing: 1px;
+        opacity: 0; pointer-events: none;
+        transition: opacity 0.2s;
+        z-index: 999;
+    }
+    #kbd-toast.show { opacity: 1; }
+    </style>
+</head>
+<body onpaste="handlePaste(event)">
+
+<!-- ── HEADER ───────────────────────────────────────────────────── -->
+<header class="app-header">
+    <div class="header-left">
+        <a href="index.html" class="back-btn" onclick="confirmExit(event)">← Back</a>
+        <div class="header-brand">
+            <div class="brand-icon">QC</div>
+            <span class="brand-name">VisionQC</span>
+            <span class="brand-version"></span>
+        </div>
+    </div>
+    <div class="header-center">Neural Scanner</div>
+    <div class="header-right">
+        <div class="backend-status">
+            <div class="status-dot offline" id="statusDot"></div>
+            <span class="status-dot-label" id="statusLabel">Connecting…</span>
+        </div>
+        <div id="liveClock">00:00:00</div>
+    </div>
+</header>
+
+<!-- ── MAIN BODY ─────────────────────────────────────────────────── -->
+<div class="app-body">
+
+    <!-- ── LEFT PANEL ──────────────────────────────────────────── -->
+    <aside class="side-panel">
+
+        <!-- Source Input -->
+        <div class="panel-section">
+            <div class="panel-label">Source Input</div>
+            <button class="hud-btn" onclick="startCamera()">📷 Camera</button>
+            <input type="file" id="fileInput" class="hidden" accept="image/*" multiple onchange="handleImportFiles(this.files)">
+            <label for="fileInput" class="hud-btn" style="cursor:pointer;">📁 Import Files</label>
+            <div style="font-family:var(--mono);font-size:0.52rem;color:var(--t3);margin-top:4px;line-height:1.5;">
+                1 file → single scan · 2+ files → batch
+            </div>
+        </div>
+
+        <div class="sep"></div>
+
+        <!-- Detection pipeline -->
+        <div class="panel-section" id="pipelineSection">
+            <div class="panel-label">Pipeline</div>
+
+            <!-- Batch run (visible when 2+ files imported) -->
+            <div id="batchRunSection" style="display:none">
+                <div class="batch-summary" id="batchSummary"></div>
+                <button class="batch-run-btn" id="batchRunBtn" onclick="runBatch()">▶ Run Batch &amp; Report</button>
+                <div class="progress-wrap" style="margin-bottom:12px;"><div class="progress-fill" id="batchProgress"></div></div>
+                <div class="sep"></div>
+            </div>
+
+            <!-- Single image pipeline -->
+            <div id="singlePipeline">
+                <div class="model-badge yolo">
+                    <div class="bdot"></div>
+                    YOLOv8 — Object Detection
+                </div>
+                <div class="pipeline-step" id="step1">
+                    <div class="sdot"></div>Detect Objects
+                </div>
+                <button class="hud-btn primary" id="btnDetect" onclick="runDetection()">Detect</button>
+                <div class="progress-wrap"><div class="progress-fill" id="pb1"></div></div>
+
+                <div class="model-badge efficientad" style="margin-top:4px;">
+                    <div class="bdot"></div>
+                    EfficientAD — Anomaly Engine
+                </div>
+                <div class="pipeline-step" id="step2">
+                    <div class="sdot"></div>Anomaly Analysis
+                </div>
+                <button class="hud-btn secondary" id="btnAnomaly" onclick="triggerAnomalyScan()" disabled>Scan Anomalies</button>
+                <div class="progress-wrap"><div class="progress-fill amber" id="pb2"></div></div>
+            </div>
+        </div>
+
+        <div class="sep"></div>
+
+        <button class="hud-btn danger" onclick="systemReset()">System Reset</button>
+
+        <div class="sep"></div>
+
+        <div class="panel-label">Shortcuts</div>
+        <div class="kbd-hints">
+            <div class="kbd"><span class="kbd-key">D</span><span class="kbd-label">Detect</span></div>
+            <div class="kbd"><span class="kbd-key">S</span><span class="kbd-label">Scan</span></div>
+            <div class="kbd"><span class="kbd-key">R</span><span class="kbd-label">Report</span></div>
+            <div class="kbd"><span class="kbd-key">Esc</span><span class="kbd-label">Reset</span></div>
+        </div>
+
+        <div class="sep"></div>
+
+        <!-- Logs -->
+        <div class="panel-section" style="display:flex;flex-direction:column;flex:1;min-height:0;">
+            <div class="panel-label">System Logs</div>
+            <div class="log-box" id="sysLogs">
+                <div class="log-entry ok">> System initialized — ready</div>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- ── CENTER VIEWPORT ─────────────────────────────────────── -->
+    <main class="viewport-panel">
+        <div class="viewport-header">
+            <span class="vp-label">Inspection Viewport</span>
+            <span class="vp-status" id="vp-mode">No source loaded</span>
+        </div>
+        <div class="viewport-inner" id="viewportInner">
+            <div id="drop-overlay">
+                <div class="drop-icon">📂</div>
+                <div class="drop-label">Drop Image Here</div>
+                <div class="drop-sub">Release to load</div>
+            </div>
+            <div class="scan-line" id="scanLine"></div>
+            <canvas id="overlayCanvas"></canvas>
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+            <p id="placeholderText">
+                NO SIGNAL
+                <span>Drop an image, paste, or use the controls</span>
+            </p>
+            <video id="webcamFeed" autoplay playsinline></video>
+            <img id="activeImage" alt="inspection image">
+            <div id="captureOverlay">
+                <button id="btnCapture" onclick="captureFromCamera()">⬤ &nbsp;Capture Frame</button>
+                <span id="captureHint">Click to snapshot</span>
+            </div>
+        </div>
+    </main>
+
+    <!-- ── RIGHT PANEL — TELEMETRY ─────────────────────────────── -->
+    <aside class="side-panel" style="border-left:1px solid var(--border);">
+
+        <!-- Status -->
+        <div class="panel-section">
+            <div class="panel-label">System Status</div>
+            <div id="statusIndicator">Awaiting Source</div>
+        </div>
+
+        <!-- Detection Telemetry -->
+        <div class="panel-section">
+            <div class="panel-label">Detection Telemetry</div>
+            <div class="stat-row">
+                <span>Objects</span>
+                <span class="stat-val blue" id="totalCount">—</span>
+            </div>
+            <div class="stat-row">
+                <span>Screws</span>
+                <span class="stat-val" id="screwCount">0</span>
+            </div>
+            <div class="stat-row">
+                <span>Nuts / Bolts</span>
+                <span class="stat-val" id="nutBoltCount">0</span>
+            </div>
+        </div>
+
+        <div class="sep"></div>
+
+        <!-- Anomaly Telemetry -->
+        <div class="panel-section">
+            <div class="panel-label">Anomaly Telemetry</div>
+            <div class="stat-row">
+                <span>Analyzed</span>
+                <span class="stat-val blue" id="analyzedCount">—</span>
+            </div>
+            <div class="stat-row">
+                <span>Defective</span>
+                <span class="stat-val red" id="defectCount">0</span>
+            </div>
+            <div class="stat-row">
+                <span>Pass Rate</span>
+                <span class="stat-val green" id="passRate">—</span>
+            </div>
+        </div>
+
+        <div class="sep"></div>
+
+        <!-- Inference Info -->
+        <div class="panel-section">
+            <div class="panel-label">Inference</div>
+            <div class="stat-row">
+                <span>YOLO Conf</span>
+                <span class="stat-val" id="confLevel">—</span>
+            </div>
+            <div class="stat-row">
+                <span>Anomaly Engine</span>
+                <span class="stat-val green" id="modelStatus">—</span>
+            </div>
+        </div>
+
+        <div class="sep"></div>
+
+        <!-- Threshold display -->
+        <div class="panel-section">
+            <div class="panel-label">Threshold</div>
+            <div class="threshold-display">
+                <div class="threshold-row">
+                    <span class="threshold-label">Anomaly Cutoff</span>
+                    <span class="threshold-val">0.5000</span>
+                </div>
+                <div class="threshold-track">
+                    <div class="threshold-fill"></div>
+                    <div class="threshold-tick"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sep"></div>
+
+        <!-- Model Info -->
+        <div class="panel-section">
+            <div class="panel-label">Model Info</div>
+            <div class="model-info-grid" id="modelInfoGrid">
+                <div class="mi-row"><span class="mi-key">YOLO arch</span><span class="mi-val">YOLOv8n</span></div>
+                <div class="mi-row"><span class="mi-key">Train images</span><span class="mi-val cyan">3,500+</span></div>
+                <div class="mi-row"><span class="mi-key">YOLO accuracy</span><span class="mi-val green">95%+</span></div>
+                <div class="mi-divider"></div>
+                <div class="mi-row"><span class="mi-key">Anomaly arch</span><span class="mi-val">EfficientAD-M</span></div>
+                <div class="mi-row"><span class="mi-key">Dataset</span><span class="mi-val">MVTec AD</span></div>
+                <div class="mi-row"><span class="mi-key">Anomaly acc.</span><span class="mi-val green">98%</span></div>
+                <div class="mi-divider"></div>
+                <div class="mi-row"><span class="mi-key">Device</span><span class="mi-val" id="mi-device">—</span></div>
+                <div class="mi-row"><span class="mi-key">Threshold</span><span class="mi-val">0.5000</span></div>
+            </div>
+        </div>
+
+        <!-- Report button -->
+        <div class="report-btn-wrap">
+            <button class="hud-btn success" id="btnReport" onclick="generateReport()" disabled>
+                Generate Report →
+            </button>
+        </div>
+
+    </aside>
+</div>
+
+<div id="kbd-toast"></div>
+
+<script>
+    const API_BASE = 'http://127.0.0.1:5000';
+
+    const logs     = document.getElementById('sysLogs');
+    const img      = document.getElementById('activeImage');
+    const video    = document.getElementById('webcamFeed');
+    const canvas   = document.getElementById('overlayCanvas');
+    const ctx      = canvas.getContext('2d');
+    const scanLine = document.getElementById('scanLine');
+
+    let detectionData = null;
+    let sourceReady   = false;
+
+    function getActiveSource() { return img.style.display === 'block' ? img : video; }
+
+    /* ── Helpers ──────────────────────────────────────────────── */
+    function addLog(text, type = '') {
+        const div = document.createElement('div');
+        div.className = `log-entry ${type}`;
+        div.innerText = `> ${new Date().toLocaleTimeString()} ${text}`;
+        logs.prepend(div);
+    }
+    function setStatus(t) {
+        document.getElementById('statusIndicator').innerText = t;
+    }
+    function setProgress(id, pct) { document.getElementById(id).style.width = pct + '%'; }
+    function setPipelineStep(step, state) {
+        document.getElementById(`step${step}`).className = `pipeline-step ${state}`;
+    }
+    function setText(id, val) { const el = document.getElementById(id); if (el) el.innerText = val; }
+    function updateClock() { document.getElementById('liveClock').textContent = new Date().toLocaleTimeString(); }
+    setInterval(updateClock, 1000); updateClock();
+
+    /* ── Health / Model Info ──────────────────────────────────── */
+    function setBackendStatus(state, label) {
+        const dot = document.getElementById('statusDot');
+        const lbl = document.getElementById('statusLabel');
+        if (dot) { dot.className = 'status-dot ' + state; }
+        if (lbl) lbl.textContent = label;
+    }
+
+    (async function fetchHealth() {
+        try {
+            const r = await fetch(`${API_BASE}/health`);
+            if (!r.ok) { setBackendStatus('offline', 'Backend Error'); return; }
+            const d = await r.json();
+
+            const yoloOk = d.yolo?.loaded === true;
+            const eadOk  = d.efficientad?.loaded === true;
+
+            if (yoloOk && eadOk)        setBackendStatus('ready',   'Models Ready');
+            else if (yoloOk || eadOk)   setBackendStatus('partial', 'Partial Load');
+            else                         setBackendStatus('offline',  'Models Offline');
+
+            const el = document.getElementById('mi-device');
+            if (el) {
+                el.textContent = d.device || '—';
+                el.className = 'mi-val ' + (d.device === 'CUDA' ? 'green' : 'cyan');
+            }
+        } catch (_) {
+            setBackendStatus('offline', 'Backend Offline');
+        }
+    })();
+
+    function confirmExit(e) {
+        if (!confirm("Unsaved scan data will be lost. Continue?")) e.preventDefault();
+    }
+
+    /* ── Camera ───────────────────────────────────────────────── */
+    const captureOverlay = document.getElementById('captureOverlay');
+
+    function stopCamera() {
+        if (video.srcObject) { video.srcObject.getTracks().forEach(t => t.stop()); video.srcObject = null; }
+        video.style.display = 'none';
+        captureOverlay.classList.remove('visible');
+    }
+    function syncCanvas(el) {
+        canvas.width  = el.clientWidth;
+        canvas.height = el.clientHeight;
+        canvas.style.top = el.offsetTop + "px";
+    }
+    function displaySource(type, src) {
+        stopCamera();
+        document.getElementById('placeholderText').style.display = 'none';
+        document.getElementById('vp-mode').textContent = type === 'img' ? 'Image loaded' : 'Camera live';
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        setStatus('Source Loaded'); sourceReady = true;
+        if (type === 'img') {
+            img.src = src; img.style.display = 'block';
+            img.onload = () => syncCanvas(img);
+        } else {
+            video.style.display = 'block';
+            video.onloadedmetadata = () => syncCanvas(video);
+        }
+    }
+    async function startCamera() {
+        try {
+            img.style.display = 'none'; img.src = '';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            detectionData = null; sourceReady = false;
+            document.getElementById('placeholderText').style.display = 'none';
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { width:{ideal:1280}, height:{ideal:720} } });
+            video.srcObject = stream;
+            video.style.display = 'block';
+            video.onloadedmetadata = () => syncCanvas(video);
+            captureOverlay.classList.add('visible');
+            setStatus('Camera Live — Awaiting Capture');
+            addLog("Camera stream active", 'ok');
+        } catch (e) {
+            addLog("Camera access denied", 'err');
+            document.getElementById('placeholderText').style.display = 'block';
+        }
+    }
+    function captureFromCamera() {
+        if (!video.srcObject) return addLog("No camera stream", 'err');
+        const nativeW = video.videoWidth, nativeH = video.videoHeight;
+        if (!nativeW || !nativeH) return addLog("Camera not ready", 'err');
+        const tc = document.createElement('canvas');
+        tc.width = nativeW; tc.height = nativeH;
+        tc.getContext('2d').drawImage(video, 0, 0, nativeW, nativeH);
+        video.classList.add('flash');
+        setTimeout(() => video.classList.remove('flash'), 400);
+        tc.toBlob(blob => {
+            const url = URL.createObjectURL(blob);
+            stopCamera();
+            img.src = url; img.style.display = 'block';
+            img.onload = () => { syncCanvas(img); URL.revokeObjectURL(url); };
+            sourceReady = true;
+            document.getElementById('vp-mode').textContent = `${nativeW}×${nativeH}px captured`;
+            setStatus('Frame Captured — Running Pipeline');
+            addLog(`Frame captured: ${nativeW}×${nativeH}px`, 'ok');
+            setTimeout(() => runDetection(), 300);
+        }, 'image/jpeg', 0.95);
+    }
+    function loadFile(e) {
+        const f = e.target.files[0]; if (!f) return;
+        const r = new FileReader();
+        r.onload = ev => {
+            displaySource('img', ev.target.result);
+            document.getElementById('vp-mode').textContent = f.name;
+            addLog(`File loaded: ${f.name}`, 'ok');
+        };
+        r.readAsDataURL(f);
+    }
+    function handlePaste(e) {
+        const item = Array.from(e.clipboardData.items).find(x => x.type.includes("image"));
+        if (item) {
+            const reader = new FileReader();
+            reader.onload = ev => { displaySource('img', ev.target.result); addLog("Image pasted", 'ok'); };
+            reader.readAsDataURL(item.getAsFile());
+        }
+    }
+    function captureBlob(source) {
+        return new Promise(resolve => {
+            const tc = document.createElement('canvas');
+            tc.width  = source.videoWidth  || source.naturalWidth;
+            tc.height = source.videoHeight || source.naturalHeight;
+            tc.getContext('2d').drawImage(source, 0, 0);
+            tc.toBlob(resolve, 'image/jpeg', 0.92);
+        });
+    }
+
+    /* ── Detection ────────────────────────────────────────────── */
+    async function runDetection() {
+        if (!sourceReady) return addLog("No source — load image first", 'err');
+        const source = getActiveSource();
+
+        document.getElementById('btnDetect').disabled  = true;
+        document.getElementById('btnAnomaly').disabled = true;
+        document.getElementById('btnReport').disabled  = true;
+        setPipelineStep(1, 'active');
+        scanLine.classList.remove('anomaly'); scanLine.classList.add('active');
+        setStatus("Running YOLOv8...");
+        setProgress('pb1', 20);
+        addLog("Starting object detection...", 'warn');
+
+        try {
+            const blob = await captureBlob(source);
+            const fd   = new FormData(); fd.append('image', blob, 'frame.jpg');
+            setProgress('pb1', 50);
+
+            const resp = await fetch(`${API_BASE}/detect`, { method: 'POST', body: fd });
+            if (!resp.ok) { const e = await resp.json().catch(()=>({})); throw new Error(e.error || `HTTP ${resp.status}`); }
+            const data = await resp.json();
+            setProgress('pb1', 90);
+
+            detectionData = data;
+            setText('totalCount',   data.total);
+            setText('screwCount',   data.screws  ?? 0);
+            setText('nutBoltCount', (data.nuts ?? 0) + (data.bolts ?? 0));
+            setText('confLevel', 'Stable');
+
+            drawBoxes(data.detections, source);
+            setProgress('pb1', 100);
+            setPipelineStep(1, 'done');
+            addLog(`Detection complete — ${data.total} object(s) found`, 'ok');
+            scanLine.classList.remove('active');
+
+            addLog("Auto-chaining anomaly scan...", 'warn');
+            setTimeout(() => triggerAnomalyScan(), 700);
+
+        } catch (e) {
+            addLog(`Detection failed: ${e.message}`, 'err');
+            setStatus("Backend Offline"); setPipelineStep(1, '');
+            scanLine.classList.remove('active');
+            document.getElementById('btnDetect').disabled = false;
+        }
+    }
+
+    function drawBoxes(detections, source) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const sx = canvas.width  / (source.videoWidth || source.naturalWidth);
+        const sy = canvas.height / (source.videoHeight || source.naturalHeight);
+        detections.forEach((det, idx) => {
+            const x1 = det.box[0]*sx, y1 = det.box[1]*sy;
+            const x2 = det.box[2]*sx, y2 = det.box[3]*sy;
+            const w = x2-x1, h = y2-y1;
+
+            ctx.strokeStyle = "#3b82f6"; ctx.lineWidth = 1.5;
+            ctx.strokeRect(x1, y1, w, h);
+
+            const label = `#${idx+1} ${det.label.toUpperCase()}`;
+            ctx.font = "bold 11px 'JetBrains Mono', monospace";
+            const textW = ctx.measureText(label).width + 10;
+            const badgeH = 18;
+            const badgeY = y1 < badgeH+2 ? y1+2 : y1-badgeH;
+
+            ctx.fillStyle = "#3b82f6"; ctx.fillRect(x1, badgeY, textW, badgeH);
+            ctx.fillStyle = "#fff";    ctx.fillText(label, x1+5, badgeY+13);
+
+            const cs = 8; ctx.strokeStyle = "#06b6d4"; ctx.lineWidth = 2;
+            [[x1,y1+cs,x1,y1,x1+cs,y1],[x2-cs,y1,x2,y1,x2,y1+cs],
+             [x1,y2-cs,x1,y2,x1+cs,y2],[x2-cs,y2,x2,y2,x2,y2-cs]].forEach(([ax,ay,bx,by,cx_,cy]) => {
+                ctx.beginPath(); ctx.moveTo(ax,ay); ctx.lineTo(bx,by); ctx.lineTo(cx_,cy); ctx.stroke();
+            });
+        });
+    }
+
+    /* ── Anomaly Scan ─────────────────────────────────────────── */
+    async function triggerAnomalyScan() {
+        if (!sourceReady)   return addLog("No source loaded", 'err');
+        if (!detectionData) return addLog("Run detection first", 'err');
+        const source = getActiveSource();
+
+        setPipelineStep(2, 'active');
+        scanLine.classList.add('active', 'anomaly');
+        setStatus("Running EfficientAD...");
+        setProgress('pb2', 15);
+        addLog("Starting anomaly engine...", 'warn');
+        setText('modelStatus', "Loading");
+
+        try {
+            setProgress('pb2', 40);
+            const resp = await fetch(`${API_BASE}/anomaly`, { method: 'POST' });
+            if (!resp.ok) { const e = await resp.json().catch(()=>({})); throw new Error(e.error || `HTTP ${resp.status}`); }
+            const data = await resp.json();
+            setProgress('pb2', 80);
+
+            const summary = data.summary || {};
+            const total   = summary.total    ?? 0;
+            const defects = summary.defective ?? 0;
+
+            setText('analyzedCount', total);
+            setText('defectCount',   defects);
+            setText('passRate', total > 0 ? (((total - defects) / total) * 100).toFixed(0) + '%' : '—');
+            setText('modelStatus', "EfficientAD OK");
+
+            localStorage.setItem('latest_inspection_report', JSON.stringify({
+                detection: detectionData,
+                anomaly:   data,
+                meta: {
+                    timestamp: new Date().toLocaleString(),
+                    sessionID: "VS-" + Math.random().toString(36).substr(2,9).toUpperCase()
+                }
+            }));
+
+            setProgress('pb2', 100);
+            setPipelineStep(2, 'done');
+            addLog(`Analysis complete — ${defects} defect(s) in ${total} object(s)`, defects > 0 ? 'err' : 'ok');
+            document.getElementById('btnReport').disabled = false;
+            setStatus("Analysis Complete");
+            if (data.heatmap_overlay) drawAnomalyOverlay(data.heatmap_overlay, source);
+
+        } catch (e) {
+            addLog(`Anomaly scan failed: ${e.message}`, 'err');
+            setStatus("EfficientAD Error");
+            setText('modelStatus', "Offline");
+        } finally {
+            scanLine.classList.remove('active', 'anomaly');
+            document.getElementById('btnDetect').disabled  = false;
+            document.getElementById('btnAnomaly').disabled = false;
+        }
+    }
+
+    function drawAnomalyOverlay(b64, source) {
+        const hi = new Image();
+        hi.onload = () => {
+            ctx.globalAlpha = 0.38;
+            ctx.drawImage(hi, 0, 0, canvas.width, canvas.height);
+            ctx.globalAlpha = 1.0;
+            addLog("Heatmap overlay rendered", 'ok');
+        };
+        hi.src = "data:image/png;base64," + b64;
+    }
+
+    /* ── Report ───────────────────────────────────────────────── */
+    function generateReport() {
+        if (!localStorage.getItem('latest_inspection_report'))
+            return addLog("No data — run full pipeline first", 'err');
+        addLog("Opening inspection report...", 'ok');
+        window.open('report.html', '_blank');
+    }
+
+    /* ── Reset ────────────────────────────────────────────────── */
+    function systemReset() {
+        stopCamera(); img.style.display = 'none'; img.src = '';
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        captureOverlay.classList.remove('visible');
+        detectionData = null; sourceReady = false;
+        ['screwCount','nutBoltCount','defectCount'].forEach(id => setText(id, '0'));
+        ['totalCount','analyzedCount','passRate','confLevel','modelStatus'].forEach(id => setText(id, '—'));
+        setStatus("Awaiting Source");
+        document.getElementById('placeholderText').style.display = 'block';
+        document.getElementById('vp-mode').textContent = 'No source loaded';
+        document.getElementById('btnDetect').disabled  = false;
+        document.getElementById('btnAnomaly').disabled = true;
+        document.getElementById('btnReport').disabled  = true;
+        setProgress('pb1', 0); setProgress('pb2', 0);
+        setPipelineStep(1, ''); setPipelineStep(2, '');
+        localStorage.removeItem('latest_inspection_report');
+        batchFiles = [];
+        document.getElementById('batchRunSection').style.display = 'none';
+        document.getElementById('singlePipeline').style.display  = '';
+        document.getElementById('batchSummary').className = 'batch-summary';
+        document.getElementById('batchProgress').style.width = '0%';
+        logs.innerHTML = '<div class="log-entry ok">> System reset — ready</div>';
+    }
+
+    window.onresize = () => {
+        const source = getActiveSource();
+        if (source.style.display !== 'none') syncCanvas(source);
+    };
+
+    /* ── Drag-and-drop ────────────────────────────────────────── */
+    const viewport    = document.getElementById('viewportInner');
+    const dropOverlay = document.getElementById('drop-overlay');
+    let dragCounter   = 0;   // track nested dragenter/dragleave pairs
+
+    viewport.addEventListener('dragenter', e => {
+        e.preventDefault();
+        if (++dragCounter === 1) dropOverlay.classList.add('active');
+    });
+    viewport.addEventListener('dragleave', () => {
+        if (--dragCounter === 0) dropOverlay.classList.remove('active');
+    });
+    viewport.addEventListener('dragover', e => e.preventDefault());
+    viewport.addEventListener('drop', e => {
+        e.preventDefault();
+        dragCounter = 0;
+        dropOverlay.classList.remove('active');
+        const images = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+        if (!images.length) return addLog('Drop rejected — no valid images', 'err');
+        handleImportFiles(images);
+    });
+
+    /* ── Unified file import ──────────────────────────────────── */
+    let batchFiles = [];
+
+    function handleImportFiles(files) {
+        if (!files || files.length === 0) return;
+        if (files.length > 1) {
+            batchFiles = Array.from(files);
+            document.getElementById('batchRunSection').style.display = '';
+            document.getElementById('singlePipeline').style.display  = 'none';
+            document.getElementById('batchRunBtn').disabled = false;
+            document.getElementById('batchProgress').style.width = '0%';
+            const sumEl = document.getElementById('batchSummary');
+            sumEl.textContent = `${batchFiles.length} files ready · ${batchFiles.map(f => f.name).join(', ')}`;
+            sumEl.className = 'batch-summary show';
+            setText('vp-mode', `${batchFiles.length} images selected`);
+            document.getElementById('placeholderText').style.display = 'block';
+            addLog(`${batchFiles.length} images queued for batch analysis`, 'ok');
+        } else {
+            batchFiles = [];
+            document.getElementById('batchRunSection').style.display = 'none';
+            document.getElementById('singlePipeline').style.display  = '';
+            document.getElementById('batchSummary').className = 'batch-summary';
+            const file = files[0];
+            const reader = new FileReader();
+            reader.onload = ev => {
+                displaySource('img', ev.target.result);
+                setText('vp-mode', file.name);
+                addLog(`Loaded: ${file.name}`, 'ok');
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    async function runBatch() {
+        if (!batchFiles.length) return;
+        const btn = document.getElementById('batchRunBtn');
+        btn.disabled = true;
+        btn.textContent = 'Analyzing…';
+        document.getElementById('batchProgress').style.width = '10%';
+
+        const fd = new FormData();
+        batchFiles.forEach(f => fd.append('images', f));
+
+        try {
+            const resp = await fetch(`${API_BASE}/batch`, { method: 'POST', body: fd });
+            if (!resp.ok) { const e = await resp.json().catch(()=>({})); throw new Error(e.error || `HTTP ${resp.status}`); }
+            const data = await resp.json();
+            document.getElementById('batchProgress').style.width = '100%';
+
+            const sessionID = `VS-${Math.random().toString(36).slice(2,10).toUpperCase()}`;
+            const payload = {
+                mode: 'batch',
+                summary: data.summary,
+                results: data.results,
+                meta: { sessionID, timestamp: new Date().toLocaleString() }
+            };
+
+            // Progressive fallback: strip heavy base64 fields if localStorage quota is exceeded
+            function tryStore(p) {
+                localStorage.setItem('latest_inspection_report', JSON.stringify(p));
+            }
+            try {
+                tryStore(payload);
+            } catch (_) {
+                // Strip heatmaps (largest field — PNG per image)
+                const noHeat = { ...payload, results: payload.results.map(r => { const {heatmap, ...rest} = r; return rest; }) };
+                try {
+                    tryStore(noHeat);
+                    addLog('Heatmaps omitted from report (storage limit — batch too large)', 'warn');
+                } catch (_2) {
+                    // Strip thumbs too
+                    const minimal = { ...noHeat, results: noHeat.results.map(r => { const {thumb, ...rest} = r; return rest; }) };
+                    tryStore(minimal);
+                    addLog('Thumbnails also omitted from report (storage limit)', 'warn');
+                }
+            }
+
+            addLog(`Batch complete — ${data.summary.total} images, ${data.summary.defective} defective. Opening report…`, data.summary.defective > 0 ? 'err' : 'ok');
+            setTimeout(() => { window.location.href = 'report.html'; }, 600);
+        } catch (e) {
+            addLog(`Batch failed: ${e.message}`, 'err');
+            btn.disabled = false;
+            btn.textContent = '▶ Run Batch & Report';
+        }
+    }
+
+    /* ── Keyboard shortcuts ───────────────────────────────────── */
+    let toastTimer = null;
+    function showToast(msg) {
+        const t = document.getElementById('kbd-toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => t.classList.remove('show'), 1400);
+    }
+
+    document.addEventListener('keydown', e => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+        if (e.ctrlKey || e.metaKey || e.altKey) return;
+        switch (e.key.toLowerCase()) {
+            case 'd':
+                if (!document.getElementById('btnDetect').disabled) {
+                    runDetection(); showToast('D — Detect');
+                }
+                break;
+            case 's':
+                if (!document.getElementById('btnAnomaly').disabled) {
+                    triggerAnomalyScan(); showToast('S — Anomaly Scan');
+                }
+                break;
+            case 'r':
+                if (!document.getElementById('btnReport').disabled) {
+                    generateReport(); showToast('R — Report');
+                }
+                break;
+            case 'escape':
+                systemReset(); showToast('Esc — Reset');
+                break;
+        }
+    });
+</script>
+</body>
+</html>

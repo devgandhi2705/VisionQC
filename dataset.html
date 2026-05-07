@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Training Dataset — VisionQC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ── Dataset page layout ─────────────────────────────────── */
+        .ds-body {
+            min-height: 100vh;
+            background-color: var(--bg);
+            background-image:
+                radial-gradient(ellipse 70% 45% at 20% -8%,  rgba(59,130,246,0.16) 0%, transparent 55%),
+                radial-gradient(ellipse 50% 40% at 80% 110%, rgba(139,92,246,0.12) 0%, transparent 55%),
+                linear-gradient(rgba(59,130,246,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59,130,246,0.03) 1px, transparent 1px);
+            background-size: auto, auto, 64px 64px, 64px 64px;
+            color: var(--t1);
+            font-family: var(--sans);
+            overflow-x: hidden;
+        }
+
+        /* ── Page hero ───────────────────────────────────────────── */
+        .ds-hero {
+            padding: 64px 56px 56px;
+            border-bottom: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 56px;
+            align-items: center;
+        }
+        .ds-hero-left { display: flex; flex-direction: column; }
+        .ds-eyebrow {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--mono);
+            font-size: 0.62rem;
+            letter-spacing: 2px;
+            color: var(--blue);
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+        .ds-eyebrow .live-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--blue);
+            box-shadow: 0 0 6px var(--blue);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%,100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .ds-hero-title {
+            font-size: clamp(2rem, 4vw, 3.4rem);
+            font-weight: 800;
+            line-height: 1.08;
+            letter-spacing: -1.5px;
+            margin-bottom: 20px;
+        }
+        .ds-hero-sub {
+            font-size: 0.95rem;
+            color: var(--t2);
+            line-height: 1.75;
+            margin-bottom: 32px;
+        }
+        .ds-kpi-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .ds-kpi {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 16px 20px;
+        }
+        .ds-kpi-num {
+            font-family: var(--mono);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--blue);
+            display: block;
+        }
+        .ds-kpi-label {
+            font-size: 0.68rem;
+            color: var(--t3);
+            letter-spacing: 0.4px;
+            margin-top: 2px;
+        }
+
+        /* ── Hero right: image mosaic ────────────────────────────── */
+        .ds-hero-right {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .ds-hero-mosaic-top {
+            display: grid;
+            grid-template-columns: 1.6fr 1fr 1fr;
+            gap: 10px;
+        }
+        .ds-hero-mosaic-bot {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1.6fr;
+            gap: 10px;
+        }
+        .ds-mosaic-cell {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+        .ds-mosaic-cell img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s;
+        }
+        .ds-mosaic-cell:hover img { transform: scale(1.05); }
+        .ds-mosaic-tag {
+            position: absolute;
+            bottom: 6px; left: 6px;
+            font-family: var(--mono);
+            font-size: 0.5rem;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            padding: 2px 7px;
+            border-radius: 4px;
+            backdrop-filter: blur(6px);
+        }
+        .ds-mosaic-tag.s1 { background: rgba(59,130,246,0.6);  color: #fff; }
+        .ds-mosaic-tag.s2 { background: rgba(16,185,129,0.6);  color: #fff; }
+        .ds-mosaic-tag.s3 { background: rgba(139,92,246,0.6);  color: #fff; }
+        .ds-mosaic-tag.s4 { background: rgba(6,182,212,0.6);   color: #fff; }
+        .ds-mosaic-tag.s5 { background: rgba(239,68,68,0.6);   color: #fff; }
+
+        @media (max-width: 960px) {
+            .ds-hero { grid-template-columns: 1fr; gap: 36px; padding: 40px 24px 40px; }
+            .ds-kpi-row { grid-template-columns: repeat(4, 1fr); }
+        }
+        @media (max-width: 600px) {
+            .ds-kpi-row { grid-template-columns: repeat(2, 1fr); }
+            .ds-mosaic-cell img { height: 130px; }
+        }
+
+        /* ── Section wrapper ─────────────────────────────────────── */
+        .ds-section {
+            padding: 56px 56px 0;
+        }
+        .ds-section-head {
+            margin-bottom: 32px;
+            text-align: center;
+        }
+        .ds-section-eyebrow {
+            font-family: var(--mono);
+            font-size: 0.58rem;
+            letter-spacing: 2.5px;
+            color: var(--t3);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .ds-section-title {
+            font-size: clamp(1.4rem, 3vw, 2rem);
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        /* ── Source cards ────────────────────────────────────────── */
+        .source-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+            gap: 24px;
+            margin-bottom: 0;
+        }
+        .source-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: border-color 0.2s, transform 0.2s;
+        }
+        .source-card:hover {
+            border-color: var(--border-mid);
+            transform: translateY(-2px);
+        }
+        .source-card-header {
+            padding: 20px 22px 14px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+        }
+        .source-badge {
+            font-family: var(--mono);
+            font-size: 0.58rem;
+            font-weight: 700;
+            padding: 4px 9px;
+            border-radius: 6px;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            margin-top: 2px;
+        }
+        .source-badge.s1 { background: var(--blue-soft); color: var(--blue); border: 1px solid rgba(59,130,246,0.25); }
+        .source-badge.s2 { background: var(--green-soft); color: var(--green); border: 1px solid rgba(16,185,129,0.25); }
+        .source-badge.s3 { background: var(--purple-soft); color: var(--purple); border: 1px solid rgba(139,92,246,0.25); }
+        .source-badge.s4 { background: var(--cyan-soft); color: var(--cyan); border: 1px solid rgba(6,182,212,0.25); }
+        .source-badge.s5 { background: var(--red-soft); color: var(--red); border: 1px solid rgba(239,68,68,0.25); }
+
+        .source-meta { flex: 1; }
+        .source-name {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--t1);
+            margin-bottom: 4px;
+        }
+        .source-count {
+            font-family: var(--mono);
+            font-size: 0.65rem;
+            color: var(--t3);
+            letter-spacing: 0.5px;
+        }
+        .source-desc {
+            padding: 14px 22px 16px;
+            font-size: 0.82rem;
+            color: var(--t2);
+            line-height: 1.6;
+        }
+        /* 2×2 image grid — fills card width, images large and visible */
+        .source-imgs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            padding: 0 12px 14px;
+        }
+        .source-imgs img {
+            width: 100%;
+            aspect-ratio: 4/3;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
+        }
+        .source-imgs img:hover {
+            transform: scale(1.03);
+            border-color: var(--border-mid);
+            box-shadow: 0 4px 20px rgba(59,130,246,0.15);
+        }
+
+        /* ── YOLO Metrics ────────────────────────────────────────── */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        .metric-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px 22px;
+            position: relative;
+            overflow: hidden;
+        }
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+        }
+        .metric-card.blue::before  { background: linear-gradient(90deg, var(--blue), var(--cyan)); }
+        .metric-card.green::before { background: linear-gradient(90deg, var(--green), #34d399); }
+        .metric-card.purple::before{ background: linear-gradient(90deg, var(--purple), #a78bfa); }
+        .metric-card.cyan::before  { background: linear-gradient(90deg, var(--cyan), var(--blue)); }
+        .metric-card.amber::before { background: linear-gradient(90deg, var(--amber), #fbbf24); }
+
+        .metric-label {
+            font-family: var(--mono);
+            font-size: 0.6rem;
+            letter-spacing: 1.5px;
+            color: var(--t3);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .metric-value {
+            font-family: var(--mono);
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .metric-card.blue   .metric-value { color: var(--blue); }
+        .metric-card.green  .metric-value { color: var(--green); }
+        .metric-card.purple .metric-value { color: var(--purple); }
+        .metric-card.cyan   .metric-value { color: var(--cyan); }
+        .metric-card.amber  .metric-value { color: var(--amber); }
+        .metric-sub {
+            font-size: 0.7rem;
+            color: var(--t3);
+            margin-top: 6px;
+        }
+        .metric-bar-wrap {
+            margin-top: 14px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 99px;
+            height: 4px;
+            overflow: hidden;
+        }
+        .metric-bar {
+            height: 100%;
+            border-radius: 99px;
+        }
+        .blue  .metric-bar { background: linear-gradient(90deg, var(--blue), var(--cyan)); }
+        .green .metric-bar { background: linear-gradient(90deg, var(--green), #34d399); }
+        .purple.metric-bar { background: linear-gradient(90deg, var(--purple), #a78bfa); }
+        .cyan  .metric-bar { background: linear-gradient(90deg, var(--cyan), var(--blue)); }
+        .amber .metric-bar { background: linear-gradient(90deg, var(--amber), #fbbf24); }
+
+        /* ── Bounding box gallery ────────────────────────────────── */
+        .viz-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 10px;
+        }
+        .viz-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            cursor: pointer;
+            transition: border-color 0.2s, transform 0.2s;
+            position: relative;
+        }
+        .viz-card:hover {
+            border-color: var(--border-mid);
+            transform: translateY(-2px);
+        }
+        .viz-card img {
+            width: 100%;
+            aspect-ratio: 4/3;
+            object-fit: cover;
+            display: block;
+        }
+        .viz-label {
+            padding: 8px 10px;
+            font-family: var(--mono);
+            font-size: 0.6rem;
+            color: var(--t3);
+            letter-spacing: 0.5px;
+        }
+
+        /* ── Lightbox ────────────────────────────────────────────── */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(5,11,20,0.92);
+            backdrop-filter: blur(8px);
+            z-index: 999;
+            align-items: center;
+            justify-content: center;
+        }
+        .lightbox.open { display: flex; }
+        .lightbox img {
+            max-width: 90vw;
+            max-height: 88vh;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-mid);
+            box-shadow: 0 0 60px rgba(59,130,246,0.2);
+        }
+        .lb-close {
+            position: absolute;
+            top: 20px; right: 24px;
+            width: 36px; height: 36px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--t2);
+            font-size: 1.1rem;
+            transition: background 0.2s;
+        }
+        .lb-close:hover { background: var(--panel); color: var(--t1); }
+
+        /* ── Split layout for YOLO section ──────────────────────── */
+        .yolo-section-wrap {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+        .yolo-desc-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+        }
+        .yolo-desc-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .yolo-desc-body {
+            font-size: 0.85rem;
+            color: var(--t2);
+            line-height: 1.7;
+            margin-bottom: 18px;
+        }
+        .yolo-tag-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .yolo-tag {
+            font-family: var(--mono);
+            font-size: 0.58rem;
+            padding: 4px 10px;
+            border-radius: 99px;
+            letter-spacing: 1px;
+        }
+        .yolo-tag.blue   { background: var(--blue-soft);   color: var(--blue);   border: 1px solid rgba(59,130,246,0.25); }
+        .yolo-tag.cyan   { background: var(--cyan-soft);   color: var(--cyan);   border: 1px solid rgba(6,182,212,0.25); }
+        .yolo-tag.green  { background: var(--green-soft);  color: var(--green);  border: 1px solid rgba(16,185,129,0.25); }
+
+        /* ── Collection flow ─────────────────────────────────────── */
+        .flow-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+            gap: 12px;
+        }
+        .flow-step {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .flow-num {
+            font-family: var(--mono);
+            font-size: 0.55rem;
+            letter-spacing: 2px;
+            color: var(--t3);
+            text-transform: uppercase;
+        }
+        .flow-icon { font-size: 1.4rem; }
+        .flow-name { font-size: 0.88rem; font-weight: 700; }
+        .flow-sub  { font-size: 0.75rem; color: var(--t2); line-height: 1.5; }
+
+        /* ── EfficientAD metrics panel ───────────────────────────── */
+        .ead-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+        }
+        .ead-metrics-row {
+            display: flex;
+            gap: 16px;
+            margin-top: 18px;
+        }
+        .ead-metric {
+            flex: 1;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 18px;
+            text-align: center;
+        }
+        .ead-metric-num {
+            font-family: var(--mono);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--purple);
+        }
+        .ead-metric-label {
+            font-size: 0.68rem;
+            color: var(--t3);
+            margin-top: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── Footer spacing ──────────────────────────────────────── */
+        /* ── EfficientAD result image ────────────────────────────── */
+        .ead-output-row {
+            margin-top: 28px;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 20px;
+            align-items: start;
+        }
+        .ead-result-wrap {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .ead-result-wrap:hover { border-color: var(--border-mid); }
+        .ead-result-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        .ead-result-eyebrow {
+            font-family: var(--mono);
+            font-size: 0.58rem;
+            letter-spacing: 1.5px;
+            color: var(--t3);
+            text-transform: uppercase;
+        }
+        .ead-result-hint {
+            font-family: var(--mono);
+            font-size: 0.56rem;
+            color: var(--blue);
+            opacity: 0.7;
+            letter-spacing: 0.5px;
+        }
+        .ead-result-img {
+            width: 100%;
+            max-height: 340px;
+            display: block;
+            object-fit: contain;
+            background: #000;
+        }
+        .ead-result-cols {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            padding: 8px 16px;
+            border-top: 1px solid var(--border);
+        }
+        .ead-result-cols span {
+            font-family: var(--mono);
+            font-size: 0.55rem;
+            color: var(--t3);
+            text-align: center;
+            letter-spacing: 0.3px;
+        }
+        /* Explanation card next to the image */
+        .ead-explain-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 22px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .ead-explain-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--t1);
+            margin-bottom: 2px;
+        }
+        .ead-col-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .ead-col-item {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .ead-col-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            margin-top: 5px;
+            flex-shrink: 0;
+        }
+        .ead-col-name {
+            font-family: var(--mono);
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+        .ead-col-desc {
+            font-size: 0.75rem;
+            color: var(--t2);
+            line-height: 1.5;
+        }
+        @media (max-width: 1100px) {
+            .ead-output-row { grid-template-columns: 1fr; }
+        }
+
+        .ds-footer-pad { height: 80px; }
+
+        @media (max-width: 900px) {
+            .ds-hero { padding: 40px 24px 32px; }
+            .ds-section { padding: 40px 24px 0; }
+            .yolo-section-wrap { grid-template-columns: 1fr; }
+            .source-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 600px) {
+            .ds-hero-title { letter-spacing: -0.5px; }
+            .ds-kpi-row { gap: 8px; }
+            .ds-kpi { padding: 14px 18px; min-width: 100px; }
+            .ds-kpi-num { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body class="ds-body">
+
+<!-- ── NAV ──────────────────────────────────────────────────── -->
+<nav class="nav">
+    <div class="nav-logo">
+        <div class="logo-icon">QC</div>
+        <span class="logo-text">VisionQC</span>
+    </div>
+    <div class="nav-right">
+        <a href="index.html" class="nav-link">← Home</a>
+        <a href="dashboard.html" class="nav-link">Inspector →</a>
+    </div>
+</nav>
+
+<!-- ── HERO ─────────────────────────────────────────────────── -->
+<section class="ds-hero">
+
+    <!-- Left: text + KPIs -->
+    <div class="ds-hero-left">
+        <div class="ds-eyebrow">
+            <span class="live-dot"></span>
+            YOLOv8 · Custom Training Pipeline · 5 Data Sources
+        </div>
+        <h1 class="ds-hero-title">
+            Training Dataset<br>
+            <span class="text-gradient">& Collection Pipeline</span>
+        </h1>
+        <p class="ds-hero-sub">
+            A 3,500+ image corpus assembled from five distinct sources — lab-captured photos,
+            MVTec-AD benchmark images, Roboflow augmentation, programmatic synthetic collages,
+            and hard-negative mining. Together they teach YOLOv8 to reliably locate screws,
+            nuts, and bolts across varied lighting, angle, and background conditions.
+        </p>
+        <div class="ds-kpi-row">
+            <div class="ds-kpi">
+                <span class="ds-kpi-num">3,500+</span>
+                <span class="ds-kpi-label">Training Images</span>
+            </div>
+            <div class="ds-kpi">
+                <span class="ds-kpi-num">5</span>
+                <span class="ds-kpi-label">Data Sources</span>
+            </div>
+            <div class="ds-kpi">
+                <span class="ds-kpi-num">94.5%</span>
+                <span class="ds-kpi-label">mAP@50</span>
+            </div>
+            <div class="ds-kpi">
+                <span class="ds-kpi-num">100+ FPS</span>
+                <span class="ds-kpi-label">Inference Speed</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right: image mosaic from all 5 sources -->
+    <div class="ds-hero-right">
+        <div class="ds-hero-mosaic-top">
+            <div class="ds-mosaic-cell">
+                <img src="static/dataset/visualized/img_000004.jpg" alt="Annotated training image">
+                <span class="ds-mosaic-tag s1">Annotated</span>
+            </div>
+            <div class="ds-mosaic-cell">
+                <img src="static/dataset/mvtec/mvtec_02.jpeg" alt="MVTec-AD sample">
+                <span class="ds-mosaic-tag s1">MVTec-AD</span>
+            </div>
+            <div class="ds-mosaic-cell">
+                <img src="static/dataset/synthetic/synth_02.jpeg" alt="Synthetic collage">
+                <span class="ds-mosaic-tag s4">Synthetic</span>
+            </div>
+        </div>
+        <div class="ds-hero-mosaic-bot">
+            <div class="ds-mosaic-cell">
+                <img src="static/dataset/negatives/neg_03.jpeg" alt="Hard negative">
+                <span class="ds-mosaic-tag s5">Negative</span>
+            </div>
+            <div class="ds-mosaic-cell">
+                <img src="static/dataset/own/own_02.jpg" alt="Custom lab capture">
+                <span class="ds-mosaic-tag s2">Custom</span>
+            </div>
+            <div class="ds-mosaic-cell">
+                <img src="static/dataset/visualized/img_000008.jpg" alt="Bounding box annotation">
+                <span class="ds-mosaic-tag s3">Annotated</span>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<!-- ── DATA COLLECTION FLOW ──────────────────────────────────── -->
+<section class="ds-section" style="padding-top:52px;padding-left: 65px;">
+    <div class="ds-section-head">
+        <div class="ds-section-eyebrow">Collection Pipeline</div>
+        <h2 class="ds-section-title">How we built the dataset</h2>
+    </div>
+    <div class="flow-steps">
+        <div class="flow-step">
+            <span class="flow-num">Step 01</span>
+            <span class="flow-icon">📷</span>
+            <span class="flow-name">Lab Capture</span>
+            <span class="flow-sub">Photographed real screws, nuts, and bolts under varied lighting and angles using smartphone cameras in a controlled lab setup.</span>
+        </div>
+        <div class="flow-step">
+            <span class="flow-num">Step 02</span>
+            <span class="flow-icon">🌐</span>
+            <span class="flow-name">Public Datasets</span>
+            <span class="flow-sub">Downloaded MVTec-AD screw images (320 normal samples) and sourced additional labeled images from the Roboflow universe.</span>
+        </div>
+        <div class="flow-step">
+            <span class="flow-num">Step 03</span>
+            <span class="flow-icon">🏷️</span>
+            <span class="flow-name">Manual Annotation</span>
+            <span class="flow-sub">Labeled every bounding box in YOLO format (.txt files) — one annotation file per image with normalized xywh coordinates.</span>
+        </div>
+        <div class="flow-step">
+            <span class="flow-num">Step 04</span>
+            <span class="flow-icon">🔀</span>
+            <span class="flow-name">Augmentation</span>
+            <span class="flow-sub">Roboflow auto-augmentation tripled the custom set: random flips, brightness jitter, and rotation kept the model view-invariant.</span>
+        </div>
+        <div class="flow-step">
+            <span class="flow-num">Step 05</span>
+            <span class="flow-icon">🧩</span>
+            <span class="flow-name">Synthetic Collages</span>
+            <span class="flow-sub">Generated 250+ multi-object scene images by compositing hardware onto diverse backgrounds to improve multi-instance detection.</span>
+        </div>
+        <div class="flow-step">
+            <span class="flow-num">Step 06</span>
+            <span class="flow-icon">🚫</span>
+            <span class="flow-name">Negative Mining</span>
+            <span class="flow-sub">Added hard-negative images (bolts, nails, pins — similar-looking non-targets) to cut false positive rates during detection.</span>
+        </div>
+    </div>
+</section>
+
+<!-- ── 5 DATA SOURCES ─────────────────────────────────────────── -->
+<section class="ds-section" style="padding-top:75px;">
+    <div class="ds-section-head">
+        <div class="ds-section-eyebrow">Data Sources</div>
+        <h2 class="ds-section-title">Five-source training corpus</h2>
+    </div>
+    <div class="source-grid">
+
+        <!-- S1 — MVTec-AD -->
+        <div class="source-card">
+            <div class="source-card-header">
+                <span class="source-badge s1">S1 · MVTec-AD</span>
+                <div class="source-meta">
+                    <div class="source-name">MVTec Anomaly Detection Dataset</div>
+                    <div class="source-count">320 normal screw images · industrial benchmark</div>
+                </div>
+            </div>
+            <div class="source-desc">
+                The MVTec AD screw category provides high-resolution, studio-lit images of real industrial screws —
+                all defect-free normal samples used as the EfficientAD training set. These images set the baseline
+                appearance the anomaly model learns to expect.
+            </div>
+            <div class="source-imgs">
+                <img src="static/dataset/mvtec/mvtec_01.jpeg" alt="MVTec sample 1" onclick="openLightbox(this.src)">
+                <img src="static/dataset/mvtec/mvtec_02.jpeg" alt="MVTec sample 2" onclick="openLightbox(this.src)">
+                <img src="static/dataset/mvtec/mvtec_03.jpeg" alt="MVTec sample 3" onclick="openLightbox(this.src)">
+                <img src="static/dataset/mvtec/mvtec_04.jpeg" alt="MVTec sample 4" onclick="openLightbox(this.src)">
+            </div>
+        </div>
+
+        <!-- S2 — Own Custom -->
+        <div class="source-card">
+            <div class="source-card-header">
+                <span class="source-badge s2">S2 · Custom</span>
+                <div class="source-meta">
+                    <div class="source-name">Lab-Captured + Roboflow Augmented</div>
+                    <div class="source-count">20 raw → 60+ augmented images · self-collected</div>
+                </div>
+            </div>
+            <div class="source-desc">
+                Original photographs taken in our lab, then uploaded to Roboflow for automated augmentation.
+                Each real image generated 3× more training examples through flips, brightness shifts, and rotations —
+                covering real-world lighting variations our camera setup encounters.
+            </div>
+            <div class="source-imgs">
+                <img src="static/dataset/own/own_01.jpg" alt="Own sample 1" onclick="openLightbox(this.src)">
+                <img src="static/dataset/own/own_02.jpg" alt="Own sample 2" onclick="openLightbox(this.src)">
+                <img src="static/dataset/own/own_03.jpg" alt="Own sample 3" onclick="openLightbox(this.src)">
+                <img src="static/dataset/own/own_04.jpg" alt="Own sample 4" onclick="openLightbox(this.src)">
+            </div>
+        </div>
+
+        <!-- S3 — Roboflow -->
+        <div class="source-card">
+            <div class="source-card-header">
+                <span class="source-badge s3">S3 · Roboflow</span>
+                <div class="source-meta">
+                    <div class="source-name">Roboflow Universe Dataset</div>
+                    <div class="source-count">Pre-labeled hardware images · community dataset</div>
+                </div>
+            </div>
+            <div class="source-desc">
+                Sourced additional annotated screw, nut, and bolt images from the Roboflow Universe — a community
+                repository of machine-vision datasets. These pre-labeled images accelerated annotation and provided
+                diverse backgrounds and hardware variants not present in our lab collection.
+            </div>
+            <div class="source-imgs">
+                <img src="static/dataset/roboflow/roboflow_01.jpeg" alt="Roboflow sample 1" onclick="openLightbox(this.src)">
+                <img src="static/dataset/roboflow/roboflow_02.jpeg" alt="Roboflow sample 2" onclick="openLightbox(this.src)">
+                <img src="static/dataset/roboflow/roboflow_03.jpeg" alt="Roboflow sample 3" onclick="openLightbox(this.src)">
+                <img src="static/dataset/roboflow/roboflow_04.jpeg" alt="Roboflow sample 4" onclick="openLightbox(this.src)">
+            </div>
+        </div>
+
+        <!-- S4 — Synthetic -->
+        <div class="source-card">
+            <div class="source-card-header">
+                <span class="source-badge s4">S4 · Synthetic</span>
+                <div class="source-meta">
+                    <div class="source-name">Synthetic Multi-Object Collages</div>
+                    <div class="source-count">250+ programmatically generated scenes</div>
+                </div>
+            </div>
+            <div class="source-desc">
+                Python-generated composite images placing multiple hardware objects onto varied backgrounds.
+                These synthetic scenes push the model to handle crowded frames with several screws, nuts, and bolts
+                simultaneously — the primary challenge in real industrial inspection trays.
+            </div>
+            <div class="source-imgs">
+                <img src="static/dataset/synthetic/synth_01.jpeg" alt="Synthetic sample 1" onclick="openLightbox(this.src)">
+                <img src="static/dataset/synthetic/synth_02.jpeg" alt="Synthetic sample 2" onclick="openLightbox(this.src)">
+                <img src="static/dataset/synthetic/synth_03.jpeg" alt="Synthetic sample 3" onclick="openLightbox(this.src)">
+                <img src="static/dataset/synthetic/synth_04.jpeg" alt="Synthetic sample 4" onclick="openLightbox(this.src)">
+            </div>
+        </div>
+
+        <!-- S5 — Negatives -->
+        <div class="source-card">
+            <div class="source-card-header">
+                <span class="source-badge s5">S5 · Negatives</span>
+                <div class="source-meta">
+                    <div class="source-name">Hard Negative Mining</div>
+                    <div class="source-count">Bolts, nails, pins — visually similar non-targets</div>
+                </div>
+            </div>
+            <div class="source-desc">
+                Hard-negative images of objects that look similar to screws and nuts — bolts, nails, and pins.
+                Training on negatives without bounding-box labels teaches YOLO to suppress false detections on
+                confusable classes, directly reducing the false-positive rate during inspection.
+            </div>
+            <div class="source-imgs">
+                <img src="static/dataset/negatives/neg_01.jpeg" alt="Negative sample 1" onclick="openLightbox(this.src)">
+                <img src="static/dataset/negatives/neg_02.jpeg" alt="Negative sample 2" onclick="openLightbox(this.src)">
+                <img src="static/dataset/negatives/neg_03.jpeg" alt="Negative sample 3" onclick="openLightbox(this.src)">
+                <img src="static/dataset/negatives/neg_04.jpeg" alt="Negative sample 4" onclick="openLightbox(this.src)">
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ── YOLO PERFORMANCE ───────────────────────────────────────── -->
+<section class="ds-section" style="padding-top:75px;">
+    <div class="ds-section-head">
+        <div class="ds-section-eyebrow">Model Performance</div>
+        <h2 class="ds-section-title">YOLOv8 training results</h2>
+    </div>
+    <div class="yolo-section-wrap">
+        <div>
+            <div class="metrics-grid">
+                <div class="metric-card blue">
+                    <div class="metric-label">Precision</div>
+                    <div class="metric-value">94.3%</div>
+                    <div class="metric-sub">Box-level on val set</div>
+                    <div class="metric-bar-wrap"><div class="metric-bar" style="width:94.3%"></div></div>
+                </div>
+                <div class="metric-card green">
+                    <div class="metric-label">Recall</div>
+                    <div class="metric-value">89.4%</div>
+                    <div class="metric-sub">Box-level on val set</div>
+                    <div class="metric-bar-wrap"><div class="metric-bar" style="width:89.4%"></div></div>
+                </div>
+                <div class="metric-card purple">
+                    <div class="metric-label">mAP@50</div>
+                    <div class="metric-value">94.5%</div>
+                    <div class="metric-sub">Mean avg. precision</div>
+                    <div class="metric-bar-wrap"><div class="metric-bar" style="width:94.5%"></div></div>
+                </div>
+                <div class="metric-card cyan">
+                    <div class="metric-label">Inference</div>
+                    <div class="metric-value">4.3ms</div>
+                    <div class="metric-sub">Per image · GPU</div>
+                    <div class="metric-bar-wrap"><div class="metric-bar" style="width:60%"></div></div>
+                </div>
+                <div class="metric-card amber">
+                    <div class="metric-label">Throughput</div>
+                    <div class="metric-value">100+ FPS</div>
+                    <div class="metric-sub">Real-time capable</div>
+                    <div class="metric-bar-wrap"><div class="metric-bar" style="width:85%"></div></div>
+                </div>
+            </div>
+        </div>
+        <div class="yolo-desc-card">
+            <div class="yolo-desc-title">YOLOv8n — Training Setup</div>
+            <div class="yolo-desc-body">
+                We selected <strong>YOLOv8n</strong> (nano) for its ideal balance of speed and accuracy for
+                edge-deployable inspection. The model was trained from COCO pretrained weights for 100 epochs
+                with a 80/20 train-validation split across our 3,500+ image corpus.
+                <br><br>
+                YOLO outputs bounding-box coordinates, class labels (screw / nut / bolt), and per-box confidence
+                scores in a single forward pass under 5 ms — feeding directly into the EfficientAD anomaly
+                stage without any inter-model bottleneck.
+            </div>
+            <div class="yolo-tag-row">
+                <span class="yolo-tag blue">YOLOv8n</span>
+                <span class="yolo-tag cyan">COCO Pretrained</span>
+                <span class="yolo-tag green">100 Epochs</span>
+                <span class="yolo-tag blue">3 Classes</span>
+                <span class="yolo-tag cyan">640×640 Input</span>
+                <span class="yolo-tag green">PyTorch</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── BOUNDING BOX VISUALIZATION GALLERY ────────────────────── -->
+<section class="ds-section" style="padding-top:75px;">
+    <div class="ds-section-head">
+        <div class="ds-section-eyebrow">YOLO Annotations</div>
+        <h2 class="ds-section-title">Bounding box visualizations</h2>
+    </div>
+    <p style="font-size:0.85rem; color:var(--t2); margin-bottom:24px; line-height:1.6;">
+        Each image in the training set has a paired <code style="font-family:var(--mono); font-size:0.78rem; color:var(--blue);">.txt</code> annotation file
+        containing normalized YOLO coordinates for every bounding box. The visualizations below are
+        rendered from the raw label files — boxes drawn directly onto the training images to verify annotation quality.
+    </p>
+    <div class="viz-gallery">
+        <div class="viz-card" onclick="openLightbox('static/dataset/visualized/img_000001.jpg')">
+            <img src="static/dataset/visualized/img_000001.jpg" alt="Annotated image 1">
+            <div class="viz-label">img_000001 · annotated</div>
+        </div>
+        <div class="viz-card" onclick="openLightbox('static/dataset/visualized/img_000002.jpg')">
+            <img src="static/dataset/visualized/img_000002.jpg" alt="Annotated image 2">
+            <div class="viz-label">img_000002 · annotated</div>
+        </div>
+        <div class="viz-card" onclick="openLightbox('static/dataset/visualized/img_000003.jpg')">
+            <img src="static/dataset/visualized/img_000003.jpg" alt="Annotated image 3">
+            <div class="viz-label">img_000003 · annotated</div>
+        </div>
+        <div class="viz-card" onclick="openLightbox('static/dataset/visualized/img_000004.jpg')">
+            <img src="static/dataset/visualized/img_000004.jpg" alt="Annotated image 4">
+            <div class="viz-label">img_000004 · annotated</div>
+        </div>
+        <div class="viz-card" onclick="openLightbox('static/dataset/visualized/img_000005.jpg')">
+            <img src="static/dataset/visualized/img_000005.jpg" alt="Annotated image 5">
+            <div class="viz-label">img_000005 · annotated</div>
+        </div>
+        <div class="viz-card" onclick="openLightbox('static/dataset/visualized/img_000006.jpg')">
+            <img src="static/dataset/visualized/img_000006.jpg" alt="Annotated image 6">
+            <div class="viz-label">img_000006 · annotated</div>
+        </div>
+        <div class="viz-card" onclick="openLightbox('static/dataset/visualized/img_000007.jpg')">
+            <img src="static/dataset/visualized/img_000007.jpg" alt="Annotated image 7">
+            <div class="viz-label">img_000007 · annotated</div>
+        </div>
+        <div class="viz-card" onclick="openLightbox('static/dataset/visualized/img_000008.jpg')">
+            <img src="static/dataset/visualized/img_000008.jpg" alt="Annotated image 8">
+            <div class="viz-label">img_000008 · annotated</div>
+        </div>
+        <div class="viz-card" onclick="openLightbox('static/dataset/visualized/img_000009.jpg')">
+            <img src="static/dataset/visualized/img_000009.jpg" alt="Annotated image 9">
+            <div class="viz-label">img_000009 · annotated</div>
+        </div>
+        <div class="viz-card" onclick="openLightbox('static/dataset/visualized/img_000010.jpg')">
+            <img src="static/dataset/visualized/img_000010.jpg" alt="Annotated image 10">
+            <div class="viz-label">img_000010 · annotated</div>
+        </div>
+        <div class="viz-card" onclick="openLightbox('static/dataset/visualized/img_000011.jpg')">
+            <img src="static/dataset/visualized/img_000011.jpg" alt="Annotated image 11">
+            <div class="viz-label">img_000011 · annotated</div>
+        </div>
+        <div class="viz-card" onclick="openLightbox('static/dataset/visualized/img_000012.jpg')">
+            <img src="static/dataset/visualized/img_000012.jpg" alt="Annotated image 12">
+            <div class="viz-label">img_000012 · annotated</div>
+        </div>
+    </div>
+</section>
+
+<!-- ── EFFICIENTAD SECTION ────────────────────────────────────── -->
+<section class="ds-section" style="padding-top:52px;">
+    <div class="ds-section-head">
+        <div class="ds-section-eyebrow">Anomaly Detection</div>
+        <h2 class="ds-section-title">EfficientAD — anomaly model</h2>
+    </div>
+    <div class="yolo-section-wrap">
+        <div class="ead-panel">
+            <div class="yolo-desc-title">Student-Teacher Architecture</div>
+            <div class="yolo-desc-body">
+                EfficientAD uses a teacher-student distillation approach: a pre-trained teacher network extracts
+                features, while a compact student network learns to replicate them only on normal samples.
+                At inference, high discrepancy between teacher and student responses flags anomalies — no defect
+                labels needed.
+                <br><br>
+                Trained exclusively on <strong>320 normal MVTec-AD screw images</strong>, the model builds a
+                statistical model of what a healthy screw looks like at the pixel level, then flags anything
+                that deviates from that learned distribution.
+            </div>
+            <div class="ead-metrics-row">
+                <div class="ead-metric">
+                    <div class="ead-metric-num">96.98%</div>
+                    <div class="ead-metric-label">Image AUROC</div>
+                </div>
+                <div class="ead-metric">
+                    <div class="ead-metric-num">97.89%</div>
+                    <div class="ead-metric-label">Pixel AUROC</div>
+                </div>
+            </div>
+        </div>
+        <div class="yolo-desc-card">
+            <div class="yolo-desc-title">Two-Model Pipeline</div>
+            <div class="yolo-desc-body">
+                YOLO and EfficientAD are designed to be <strong>complementary, not competing</strong>.
+                YOLO handles <em>what</em> and <em>where</em> — detecting and locating each hardware component.
+                EfficientAD handles <em>whether it's defective</em> — scoring the full image for surface anomalies.
+                <br><br>
+                The pipeline runs both models on every inspection image: YOLO provides bounding boxes
+                and class labels, while EfficientAD's full-image anomaly map is sliced per bounding box
+                to generate a per-component defect score and heatmap visualization.
+            </div>
+            <div class="yolo-tag-row">
+                <span class="yolo-tag blue">EfficientAD-M</span>
+                <span class="yolo-tag cyan">MVTec AD · Screw</span>
+                <span class="yolo-tag green">No Defect Labels</span>
+                <span class="yolo-tag blue">Pixel-level Maps</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Model output visualization -->
+    <div class="ead-output-row">
+        <div class="ead-result-wrap" onclick="openLightbox('static/efficientAD_result.jpeg')">
+            <div class="ead-result-label-row">
+                <span class="ead-result-eyebrow">Model Output · MVTec AD Screw · Inference Visualization</span>
+                <span class="ead-result-hint">click to enlarge</span>
+            </div>
+            <img src="static/efficientAD_result.jpeg" alt="EfficientAD inference result — anomaly map and segmentation mask" class="ead-result-img">
+            <div class="ead-result-cols">
+                <span>Input Image</span>
+                <span>Ground Truth Mask</span>
+                <span>Anomaly Heatmap</span>
+                <span>Overlay</span>
+                <span>Predicted Mask</span>
+            </div>
+        </div>
+        <div class="ead-explain-card">
+            <div>
+                <div class="ead-explain-title">Reading the output</div>
+            </div>
+            <div class="ead-col-list">
+                <div class="ead-col-item">
+                    <div class="ead-col-dot" style="background:var(--t3)"></div>
+                    <div>
+                        <div class="ead-col-name">Input Image</div>
+                        <div class="ead-col-desc">Raw grayscale screw photo fed into the model — same format as MVTec-AD training images.</div>
+                    </div>
+                </div>
+                <div class="ead-col-item">
+                    <div class="ead-col-dot" style="background:var(--t2)"></div>
+                    <div>
+                        <div class="ead-col-name">Ground Truth Mask</div>
+                        <div class="ead-col-desc">Human-annotated defect region — the white blob marks where the real surface defect is located.</div>
+                    </div>
+                </div>
+                <div class="ead-col-item">
+                    <div class="ead-col-dot" style="background:var(--red)"></div>
+                    <div>
+                        <div class="ead-col-name">Anomaly Heatmap</div>
+                        <div class="ead-col-desc">EfficientAD's raw output — red/yellow = high anomaly score, blue = normal. Generated without any defect labels.</div>
+                    </div>
+                </div>
+                <div class="ead-col-item">
+                    <div class="ead-col-dot" style="background:var(--cyan)"></div>
+                    <div>
+                        <div class="ead-col-name">Overlay</div>
+                        <div class="ead-col-desc">Heatmap blended onto the input — shows exactly which part of the screw the model flagged as anomalous.</div>
+                    </div>
+                </div>
+                <div class="ead-col-item">
+                    <div class="ead-col-dot" style="background:var(--blue)"></div>
+                    <div>
+                        <div class="ead-col-name">Predicted Mask</div>
+                        <div class="ead-col-desc">Binary segmentation derived by applying a score threshold to the heatmap — compared against Ground Truth to compute the Pixel AUC score.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── LIGHTBOX ───────────────────────────────────────────────── -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <button class="lb-close" onclick="closeLightbox()">✕</button>
+    <img id="lbImg" src="" alt="Preview">
+</div>
+
+<!-- ── FOOTER ────────────────────────────────────────────────── -->
+<div class="ds-footer-pad"></div>
+<footer class="site-footer">
+    <div class="footer-brand">
+        <div class="footer-logo-icon">QC</div>
+        <span class="footer-name">VisionQC · Industrial AI Inspector</span>
+    </div>
+    <span class="footer-stack">YOLOv8 · EfficientAD · PyTorch · Flask · OpenCV</span>
+</footer>
+
+<script>
+    function openLightbox(src) {
+        document.getElementById('lbImg').src = src;
+        document.getElementById('lightbox').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+        document.getElementById('lightbox').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+</script>
+</body>
+</html>

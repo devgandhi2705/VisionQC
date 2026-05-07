@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VisionQC — Industrial Defect Detection AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="index-body">
+
+<!-- ── NAV ──────────────────────────────────────────────────── -->
+<nav class="nav">
+    <div class="nav-logo">
+        <div class="logo-icon">QC</div>
+        <span class="logo-text">VisionQC</span>
+    </div>
+    <div class="nav-right">
+        <a href="dataset.html" class="nav-link">Dataset</a>
+        <a href="dashboard.html" class="nav-link">Inspector →</a>
+    </div>
+</nav>
+
+<!-- ── HERO ─────────────────────────────────────────────────── -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-eyebrow">
+            <span class="live-dot"></span>
+            Autonomous Quality Control · Computer Vision AI
+        </div>
+        <h1 class="hero-title">
+            Find Defects.<br>
+            <span class="text-gradient">Protect Quality.</span>
+        </h1>
+        <p class="hero-desc">
+            A two-stage deep learning pipeline that detects and inspects industrial hardware
+            components in real time — combining <strong>YOLOv8</strong> object detection with
+            <strong>EfficientAD</strong> anomaly analysis trained on the MVTec AD dataset.
+        </p>
+        <div class="hero-cta">
+            <a href="dashboard.html" class="btn-primary">
+                <span>Launch Inspector</span>
+                <span class="btn-arrow">→</span>
+            </a>
+            <a href="https://github.com/devgandhi2705/VisionQC" class="btn-ghost" target="_blank" rel="noopener">GitHub →</a>
+        </div>
+    </div>
+
+    <!-- Animated scanner mockup -->
+    <div class="hero-visual">
+        <div class="mockup-frame">
+            <div class="mockup-topbar">
+                <div class="mockup-dots">
+                    <span style="background:#ef4444"></span>
+                    <span style="background:#f59e0b"></span>
+                    <span style="background:#10b981"></span>
+                </div>
+                <span class="mockup-name">NEURAL_SCANNER</span>
+                <span class="mockup-time" id="mockClock">00:00:00</span>
+            </div>
+            <div class="mockup-viewport">
+                <div class="mockup-heat"></div>
+                <div class="mockup-scan-line"></div>
+                <div class="mockup-bbox">
+                    <div class="mockup-bbox-label">#1 SCREW</div>
+                    <span class="mc tl"></span>
+                    <span class="mc tr"></span>
+                    <span class="mc bl"></span>
+                    <span class="mc br"></span>
+                </div>
+            </div>
+            <div class="mockup-statusbar">
+                <div class="mockup-stat">
+                    <span class="ms-label">Status</span>
+                    <span class="ms-val defect">DEFECTIVE</span>
+                </div>
+                <div class="mockup-stat">
+                    <span class="ms-label">Score</span>
+                    <span class="ms-val score">0.8734</span>
+                </div>
+                <div class="mockup-stat">
+                    <span class="ms-label">Engine</span>
+                    <span class="ms-val ok">EFFICIENTAD</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── TECH STRIP ────────────────────────────────────────────── -->
+<div class="tech-strip">
+    <span class="tech-powered">Powered by</span>
+    <div class="tech-badges">
+        <span class="tech-badge">YOLOv8n</span>
+        <span class="tech-badge">EfficientAD-M</span>
+        <span class="tech-badge">PyTorch</span>
+        <span class="tech-badge">anomalib</span>
+        <span class="tech-badge">Flask</span>
+        <span class="tech-badge">OpenCV</span>
+        <span class="tech-badge">MVTec AD</span>
+    </div>
+</div>
+
+<!-- ── FEATURES ──────────────────────────────────────────────── -->
+<section class="features-section">
+    <p class="section-eyebrow">System Capabilities</p>
+    <h2 class="section-title-main">A complete inspection pipeline</h2>
+    <div class="features-grid">
+        <div class="feat-card blue">
+            <div class="feat-icon blue">🔍</div>
+            <h3>Object Detection</h3>
+            <p>YOLOv8 locates screws, nuts, and bolts with bounding-box precision. Runs at 4.3 ms per frame, returning class labels, coordinates, and confidence scores.</p>
+            <span class="feat-chip blue">YOLOv8n · 94.5% mAP@50</span>
+        </div>
+        <div class="feat-card purple">
+            <div class="feat-icon purple">🧠</div>
+            <h3>Anomaly Engine</h3>
+            <p>EfficientAD generates pixel-level anomaly heatmaps from a single forward pass. Trained on the MVTec AD screw dataset — no defect labels needed at inference.</p>
+            <span class="feat-chip purple">EfficientAD · 97.89% Pixel AUC</span>
+        </div>
+        <div class="feat-card green">
+            <div class="feat-icon green">📊</div>
+            <h3>Inspection Reports</h3>
+            <p>Every scan produces a structured audit trail — anomaly scores, bounding boxes, crop thumbnails, heatmap overlays, and pass/fail status per component.</p>
+            <span class="feat-chip green">Print-ready · CSV export</span>
+        </div>
+        <div class="feat-card cyan">
+            <div class="feat-icon cyan">📦</div>
+            <h3>Batch Processing</h3>
+            <p>Upload 2 or more images at once and the pipeline automatically runs both YOLO detection and EfficientAD anomaly scoring on every image in a single pass.</p>
+            <span class="feat-chip cyan">Multi-image · Unified report</span>
+        </div>
+    </div>
+</section>
+
+<!-- ── PIPELINE STEPS ────────────────────────────────────────── -->
+<section class="pipeline-section" style="padding-top:0;">
+    <p class="section-eyebrow">How it works</p>
+    <h2 class="section-title-main">Four-stage inspection flow</h2>
+    <div class="pipeline-steps pipeline-steps-4">
+        <div class="pipe-step" style="border-color:rgba(59,130,246,0.25);">
+            <div class="pipe-num">STEP 01</div>
+            <span class="pipe-icon">📷</span>
+            <div class="pipe-name">Capture</div>
+            <div class="pipe-sub">Camera snapshot or file import — single image or batch of images</div>
+        </div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-step" style="border-color:rgba(6,182,212,0.25);">
+            <div class="pipe-num">STEP 02</div>
+            <span class="pipe-icon">🎯</span>
+            <div class="pipe-name">Detect</div>
+            <div class="pipe-sub">YOLOv8 identifies component class and bounding box per object</div>
+        </div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-step" style="border-color:rgba(139,92,246,0.25);">
+            <div class="pipe-num">STEP 03</div>
+            <span class="pipe-icon">⚡</span>
+            <div class="pipe-name">Analyze</div>
+            <div class="pipe-sub">EfficientAD scores anomaly and generates pixel-level heatmap</div>
+        </div>
+        <div class="pipe-arrow">→</div>
+        <div class="pipe-step" style="border-color:rgba(16,185,129,0.25);">
+            <div class="pipe-num">STEP 04</div>
+            <span class="pipe-icon">📋</span>
+            <div class="pipe-name">Report</div>
+            <div class="pipe-sub">Full audit report with scores, heatmaps, CSV export and print</div>
+        </div>
+    </div>
+</section>
+
+<!-- ── DATASET HIGHLIGHT ──────────────────────────────────────── -->
+<section class="dataset-highlight-section">
+    <div class="ds-hl-inner">
+        <div class="ds-hl-text">
+            <p class="section-eyebrow" style="margin-bottom:14px;">Training Data</p>
+            <h2 class="section-title-main" style="font-size:1.8rem; margin-bottom:14px; text-align:left;">
+                3,500+ images.<br>5 curated sources.
+            </h2>
+            <p style="font-size:0.9rem; color:var(--t2); line-height:1.7; margin-bottom:24px; max-width:440px;">
+                Our YOLO model was trained on a custom corpus spanning MVTec-AD, lab-captured images,
+                Roboflow augmentation, synthetic collages, and hard-negative mining — see how the
+                dataset was assembled, annotated, and validated.
+            </p>
+            <div class="ds-hl-chips">
+                <span class="ds-chip blue">MVTec-AD · 320 normal</span>
+                <span class="ds-chip green">Custom Lab Captures</span>
+                <span class="ds-chip purple">Roboflow Augmented</span>
+                <span class="ds-chip cyan">Synthetic Collages</span>
+                <span class="ds-chip red">Hard Negatives</span>
+            </div>
+            <a href="dataset.html" class="btn-primary" style="display:inline-flex; margin-top:28px;">
+                <span>Explore Dataset</span>
+                <span class="btn-arrow">→</span>
+            </a>
+        </div>
+        <div class="ds-hl-gallery">
+            <div class="ds-hl-img-grid">
+                <img src="static/dataset/visualized/img_000001.jpg" alt="Annotated">
+                <img src="static/dataset/visualized/img_000003.jpg" alt="Annotated">
+                <img src="static/dataset/mvtec/mvtec_02.jpeg" alt="MVTec">
+                <img src="static/dataset/synthetic/synth_02.jpeg" alt="Synthetic">
+                <img src="static/dataset/negatives/neg_02.jpeg" alt="Negative">
+                <img src="static/dataset/own/own_01.jpg" alt="Custom">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── STATS ─────────────────────────────────────────────────── -->
+<div class="stats-strip">
+    <div class="stats-inner">
+        <div class="stat-item">
+            <span class="stat-num">97.89%</span>
+            <span class="stat-desc">Pixel AUC · EfficientAD</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num">94.5%</span>
+            <span class="stat-desc">mAP@50 · YOLOv8</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num">3,500+</span>
+            <span class="stat-desc">Custom Training Images</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-num">100+ FPS</span>
+            <span class="stat-desc">Real-time Throughput</span>
+        </div>
+    </div>
+</div>
+
+<!-- ── REPORTS & EXPORT ───────────────────────────────────────── -->
+<section class="reports-section">
+    <div class="reports-inner">
+        <div class="reports-header">
+            <p class="section-eyebrow">Output Formats</p>
+            <h2 class="section-title-main">Reports & Export</h2>
+            <p class="reports-sub">
+                Every inspection run — single image or batch — produces a structured audit report
+                with anomaly heatmaps, bounding boxes, and per-component pass/fail verdicts.
+                Download as a print-ready PDF or export raw scan data to CSV for further analysis.
+            </p>
+        </div>
+
+        <div class="reports-grid">
+
+            <!-- Single Report -->
+            <div class="report-preview-card">
+                <div class="rpc-header">
+                    <div class="rpc-tag blue">UI Demo · Single Scan</div>
+                    <a href="static/output/single_report.png" download="single_report.png" target="_blank" class="rpc-dl-btn">
+                        ↓ Download PNG
+                    </a>
+                </div>
+                <div class="rpc-img-wrap">
+                    <img src="static/output/single_report.png" alt="Single inspection report preview">
+                    <div class="rpc-img-overlay">
+                        <a href="static/output/single_report.png" download="single_report.png" target="_blank" class="rpc-dl-big">Download Sample Report</a>
+                    </div>
+                </div>
+                <div class="rpc-footer">
+                    <span class="rpc-detail">Anomaly score · Heatmap overlay · Bounding boxes · Pass/Fail verdict</span>
+                </div>
+            </div>
+
+            <!-- Batch Report -->
+            <div class="report-preview-card">
+                <div class="rpc-header">
+                    <div class="rpc-tag purple">Batch Scan Report</div>
+                    <a href="static/output/VisionQC — Inspection Report.pdf" download target="_blank" class="rpc-dl-btn">
+                        ↓ Download PDF
+                    </a>
+                </div>
+                <div class="rpc-img-wrap">
+                    <img src="static/output/batch_report.png" alt="Batch inspection report preview">
+                    <div class="rpc-img-overlay">
+                        <a href="static/output/VisionQC — Inspection Report.pdf" download target="_blank" class="rpc-dl-big">Download Sample Report</a>
+                    </div>
+                </div>
+                <div class="rpc-footer">
+                    <span class="rpc-detail">Per-image results · Heatmap thumbnails · YOLO detections · Summary table</span>
+                </div>
+            </div>
+
+            <!-- CSV Export -->
+            <div class="report-preview-card csv-card">
+                <div class="rpc-header">
+                    <div class="rpc-tag green">CSV Data Export</div>
+                    <a href="static/output/visionqc_batch_VS-SEBS0EV8_1778145481576.csv" download="visionqc_sample_export.csv" target="_blank" class="rpc-dl-btn">
+                        ↓ Download CSV
+                    </a>
+                </div>
+                <div class="csv-preview">
+                    <div class="csv-header-row">
+                        <span>SESSION</span><span>IMAGE</span><span>LABEL</span><span>CONF</span><span>X1</span><span>Y1</span><span>X2</span><span>Y2</span><span>SCORE</span><span>STATUS</span>
+                    </div>
+                    <div class="csv-data-row">
+                        <span>VS-SE…</span><span>img_01.jpg</span><span>screw</span><span>0.9812</span><span>142</span><span>88</span><span>310</span><span>290</span><span>0.7341</span><span class="csv-status defect">DEFECTIVE</span>
+                    </div>
+                    <div class="csv-data-row alt">
+                        <span>VS-SE…</span><span>img_02.jpg</span><span>screw</span><span>0.9654</span><span>98</span><span>112</span><span>276</span><span>298</span><span>0.2108</span><span class="csv-status ok">OK</span>
+                    </div>
+                    <div class="csv-data-row">
+                        <span>VS-SE…</span><span>img_03.jpg</span><span>nut</span><span>0.9230</span><span>200</span><span>145</span><span>340</span><span>280</span><span>0.8812</span><span class="csv-status defect">DEFECTIVE</span>
+                    </div>
+                    <div class="csv-data-row alt">
+                        <span>VS-SE…</span><span>img_04.jpg</span><span>bolt</span><span>0.8990</span><span>55</span><span>60</span><span>190</span><span>200</span><span>0.1543</span><span class="csv-status ok">OK</span>
+                    </div>
+                    <div class="csv-fade"></div>
+                </div>
+                <div class="rpc-footer">
+                    <span class="rpc-detail">One row per detected object · YOLO coordinates · Anomaly score · Threshold · Status</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- ── FOOTER ────────────────────────────────────────────────── -->
+<footer class="site-footer">
+    <div class="footer-brand">
+        <div class="footer-logo-icon">QC</div>
+        <span class="footer-name">VisionQC · Industrial AI Inspector</span>
+    </div>
+    <div class="footer-nav">
+        <a href="index.html" class="footer-nav-link">Home</a>
+        <a href="dataset.html" class="footer-nav-link">Dataset</a>
+        <a href="dashboard.html" class="footer-nav-link">Inspector</a>
+        <a href="https://github.com/devgandhi2705/VisionQC" class="footer-nav-link" target="_blank" rel="noopener">GitHub</a>
+    </div>
+    <span class="footer-stack">YOLOv8 · EfficientAD · PyTorch · Flask · OpenCV</span>
+</footer>
+
+<script>
+    function tick() {
+        document.getElementById('mockClock').textContent = new Date().toLocaleTimeString();
+    }
+    setInterval(tick, 1000);
+    tick();
+</script>
+</body>
+</html>
