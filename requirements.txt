@@ -13,4 +13,5 @@ Pillow
 flask
 flask-cors
 ultralytics
+lightning>=2.0
 anomalib==1.1.0
