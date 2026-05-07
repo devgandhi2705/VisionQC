@@ -1,3 +1,12 @@
+---
+title: VisionQC
+emoji: 🔍
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+pinned: false
+---
+
 # VisionQC — Industrial Defect Detection AI
 
 > A two-stage deep learning pipeline for real-time industrial hardware inspection.  
