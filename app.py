@@ -67,8 +67,8 @@ def _load_efficientad(path):
         from anomalib.models.image.efficient_ad.lightning_model import (
             EfficientAd, EfficientAdModelSize
         )
-    except ImportError:
-        raise RuntimeError("anomalib not installed. Install with: pip install anomalib")
+    except Exception as _imp_err:
+        raise RuntimeError(f"anomalib import failed: {_imp_err}") from _imp_err
 
     model = EfficientAd(
         model_size           = EfficientAdModelSize.M,
