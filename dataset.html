@@ -623,16 +623,41 @@
         }
 
         @media (max-width: 480px) {
-            .ds-hero { padding: 28px 14px 22px; }
-            .ds-section { padding: 28px 14px 0; }
-            .ds-section-title { font-size: 1.4rem; }
+            .ds-hero { padding: 24px 14px 18px; gap: 20px; }
+            .ds-section { padding: 24px 14px 0; }
+            .ds-section-title { font-size: 1.25rem; }
+            .ds-section-eyebrow { margin-bottom: 5px; }
+
+            /* Hero mosaic: single column */
             .ds-hero-mosaic-top,
             .ds-hero-mosaic-bot { grid-template-columns: 1fr; gap: 6px; }
             .ds-hero-mosaic-top > *:first-child,
             .ds-hero-mosaic-bot > *:last-child { grid-column: span 1; }
-            .ds-mosaic-cell img { height: 160px; }
-            .source-grid { gap: 16px; }
-            .ds-footer-pad { height: 40px; }
+            .ds-mosaic-cell img { height: 140px; }
+
+            /* KPI row */
+            .ds-kpi { padding: 12px 14px; }
+            .ds-kpi-num { font-size: 1.1rem; }
+            .ds-kpi-label { font-size: 0.6rem; }
+
+            /* Viz gallery: 2-column so images aren't huge */
+            .viz-gallery { grid-template-columns: 1fr 1fr; gap: 8px; }
+
+            /* Metric cards compact */
+            .metric-card { padding: 16px 14px; }
+            .metric-value { font-size: 1.5rem; }
+            .metric-sub { font-size: 0.62rem; margin-top: 4px; }
+
+            /* Source cards */
+            .source-card-header { padding: 14px 16px 10px; }
+            .source-desc { padding: 10px 16px 12px; font-size: 0.78rem; }
+
+            /* EfficientAD metrics */
+            .ead-metric { padding: 12px; }
+            .ead-metric-num { font-size: 1.1rem; }
+
+            .source-grid { gap: 14px; }
+            .ds-footer-pad { height: 32px; }
         }
     </style>
 </head>

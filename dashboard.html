@@ -490,6 +490,8 @@
             overflow-y: visible;
             border-right: none;
             border-bottom: 1px solid var(--border);
+            padding: 12px;
+            gap: 2px;
         }
         .side-panel:last-child {
             border-left: none;
@@ -497,19 +499,33 @@
             border-bottom: none;
         }
 
-        .log-box { max-height: 120px; }
-        .batch-grid { max-height: 160px; }
+        /* Compact panel internals */
+        .panel-section { margin-bottom: 6px; }
+        .panel-label { font-size: 0.5rem; margin-bottom: 8px; padding-bottom: 6px; }
+        .hud-btn { padding: 8px 12px; font-size: 0.65rem; margin-bottom: 6px; }
+        .stat-row { margin-bottom: 7px; }
+        .sep { margin: 5px 0 10px; }
+        .model-badge { padding: 5px 8px; font-size: 0.55rem; }
+        .pipeline-step { font-size: 0.58rem; padding: 4px 6px; }
+        .mi-row { font-size: 0.72rem; }
+        .mi-val { font-size: 0.64rem; }
+        .log-box { max-height: 100px; }
+        .batch-grid { max-height: 140px; }
+        .threshold-display { padding: 8px 10px; }
+        .threshold-label { font-size: 0.54rem; }
+        .threshold-val { font-size: 0.68rem; }
     }
 
     @media (max-width: 480px) {
-        .app-header { padding: 0 12px; }
-        .header-left { gap: 8px; }
-        .back-btn { padding: 4px 8px; font-size: 0.58rem; }
-        .brand-name { font-size: 0.72rem; }
-        #liveClock { font-size: 0.65rem; min-width: 52px; }
+        .app-header { padding: 0 10px; height: 46px; }
+        .header-left { gap: 6px; }
+        .back-btn { padding: 3px 7px; font-size: 0.56rem; }
+        .brand-name { font-size: 0.68rem; }
+        #liveClock { font-size: 0.62rem; min-width: 46px; }
         .status-dot-label { display: none; }
-        .viewport-panel { height: max(50vw, 240px); }
+        .viewport-panel { height: max(48vw, 220px); }
         .kbd-hints { display: none; }
+        .side-panel { padding: 10px; }
     }
     </style>
 </head>

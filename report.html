@@ -368,30 +368,39 @@
     }
 
     @media (max-width: 640px) {
-        .report-topbar { padding: 10px 14px; gap: 8px; }
+        .report-topbar { padding: 9px 12px; gap: 6px; }
         .btn-export { display: none; }
-        .report-content { padding: 20px 14px 0; }
-        .report-footer { flex-direction: column; gap: 6px; text-align: center; padding: 20px 14px 0; }
-        .report-hero { flex-direction: column; gap: 16px; align-items: flex-start; }
-        .verdict-badge { align-self: flex-start; padding: 12px 20px; min-width: auto; }
-        .report-title { font-size: 1.4rem; }
-        .summary-grid { grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 36px; }
-        .sc-value { font-size: 2rem; }
-        .stat-card { padding: 16px 14px 12px; }
-        .sec-header { margin-top: 36px; }
-        .sec-title { font-size: 0.65rem; letter-spacing: 2px; }
+        .topbar-center { display: none; }
+        .report-content { padding: 16px 12px 0; }
+        .report-footer { flex-direction: column; gap: 4px; text-align: center; padding: 16px 12px 0; }
+        .report-hero { flex-direction: column; gap: 12px; align-items: flex-start; padding-bottom: 20px; margin-bottom: 20px; }
+        .report-eyebrow { font-size: 0.5rem; margin-bottom: 6px; }
+        .report-title { font-size: 1.2rem; }
+        .verdict-badge { align-self: flex-start; padding: 10px 16px; min-width: auto; }
+        .verdict-value { font-size: 1.1rem; }
+        .summary-grid { grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 24px; }
+        .sc-label { font-size: 0.5rem; margin-bottom: 8px; }
+        .sc-value { font-size: 1.7rem; }
+        .sc-sub { font-size: 0.5rem; }
+        .stat-card { padding: 14px 12px 10px; }
+        .sec-header { margin-top: 24px; margin-bottom: 10px; }
+        .sec-title { font-size: 0.6rem; letter-spacing: 2px; }
         /* Scrollable tables on small screens */
         .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         table { min-width: 480px; }
         #batch-content .table-wrap table { min-width: 640px; }
-        /* viz boxes slightly smaller */
-        .viz-box { width: 60px; height: 60px; }
+        /* viz boxes compact */
+        .viz-box { width: 52px; height: 52px; }
+        .viz-lbl { font-size: 0.4rem; }
         /* Detail modal */
         #detail-images { flex-direction: column; align-items: center; }
         .detail-img-col { max-width: 100%; width: 100%; }
-        #detail-info { padding: 0 14px 16px; }
-        #detail-header { padding: 12px 14px; }
-        .detail-info-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        #detail-info { padding: 0 12px 14px; }
+        #detail-header { padding: 10px 12px; }
+        #detail-title { font-size: 0.65rem; }
+        .detail-info-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; padding-top: 12px; }
+        .detail-stat { padding: 10px 12px; }
+        .detail-stat-val { font-size: 0.78rem; }
     }
 
     @media (max-width: 420px) {
