@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 import base64
 import traceback
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from ultralytics import YOLO
 from PIL import Image
@@ -14,6 +14,20 @@ import torchvision.transforms.v2 as T  # v2 API — matches inference.py exactly
 
 app = Flask(__name__)
 CORS(app)
+
+
+# ── SERVE FRONTEND ──────────────────────────────────────────────
+@app.route("/")
+def serve_index():
+    return send_from_directory(".", "index.html")
+
+@app.route("/style.css")
+def serve_css():
+    return send_from_directory(".", "style.css")
+
+@app.route("/<page>.html")
+def serve_page(page):
+    return send_from_directory(".", f"{page}.html")
 
 # ── Globals ─────────────────────────────────────────────────────
 latest_image   = None
@@ -347,5 +361,5 @@ def batch():
 
 # ════════════════════════════════════════════════════════════════
 if __name__ == "__main__":
-    print("🚀 SERVER RUNNING ON http://127.0.0.1:5000")
-    app.run(port=5000, debug=False)
+    print("🚀 SERVER RUNNING ON http://0.0.0.0:7860")
+    app.run(host="0.0.0.0", port=7860, debug=False)
