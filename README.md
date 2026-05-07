@@ -1,11 +1,4 @@
----
-title: VisionQC
-emoji: 🔍
-colorFrom: blue
-colorTo: indigo
-sdk: docker
-pinned: false
----
+
 
 # VisionQC — Industrial Defect Detection AI
 

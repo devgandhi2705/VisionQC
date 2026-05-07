@@ -1,14 +1,8 @@
 # ================================================================
 #  VisionQC — .gitignore
+#  NOTE: Model checkpoints, static assets, Images/, demo_images/,
+#  and other/ are intentionally TRACKED (not ignored).
 # ================================================================
-
-# Model checkpoints
-*.pt
-
-# Asset folders (large binary files — not needed in git)
-demo_images/
-other/
-static/
 
 # Python bytecode
 __pycache__/

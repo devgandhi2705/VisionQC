@@ -6,14 +6,16 @@ scikit-image
 scikit-learn
 tqdm
 
-torch==2.2.2
-torchvision==0.17.2
+torch
+torchvision
 
 albumentations
+
+tensorboard
 
 Pillow
 
 flask
 flask-cors
 ultralytics
-anomalib==1.1.0
+anomalib
