@@ -1,0 +1,5 @@
+multi screen UI UX
+batch processing for multiple images
+Landing & dataset page with UI & UX upgraded
+report upgraded with csv download
+effecientAD issue solved
