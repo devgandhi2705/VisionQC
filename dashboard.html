@@ -457,6 +457,60 @@
         z-index: 999;
     }
     #kbd-toast.show { opacity: 1; }
+
+    /* ── RESPONSIVE ────────────────────────────────────────────────── */
+    @media (max-width: 960px) {
+        .header-center { display: none; }
+        .brand-version { display: none; }
+    }
+
+    @media (max-width: 768px) {
+        body { height: auto; overflow-y: auto; }
+
+        .app-body {
+            display: flex;
+            flex-direction: column;
+            height: auto;
+            overflow: visible;
+        }
+
+        /* Reorder: viewport first, then controls, then telemetry */
+        .app-body > aside:first-child { order: 2; }
+        .app-body > main             { order: 1; }
+        .app-body > aside:last-child  { order: 3; }
+
+        .viewport-panel {
+            height: max(54vw, 260px);
+            max-height: 400px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .side-panel {
+            max-height: none;
+            overflow-y: visible;
+            border-right: none;
+            border-bottom: 1px solid var(--border);
+        }
+        .side-panel:last-child {
+            border-left: none;
+            border-top: none;
+            border-bottom: none;
+        }
+
+        .log-box { max-height: 120px; }
+        .batch-grid { max-height: 160px; }
+    }
+
+    @media (max-width: 480px) {
+        .app-header { padding: 0 12px; }
+        .header-left { gap: 8px; }
+        .back-btn { padding: 4px 8px; font-size: 0.58rem; }
+        .brand-name { font-size: 0.72rem; }
+        #liveClock { font-size: 0.65rem; min-width: 52px; }
+        .status-dot-label { display: none; }
+        .viewport-panel { height: max(50vw, 240px); }
+        .kbd-hints { display: none; }
+    }
     </style>
 </head>
 <body onpaste="handlePaste(event)">

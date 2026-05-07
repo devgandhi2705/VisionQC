@@ -855,3 +855,107 @@ a { text-decoration: none; }
     color: var(--t3);
     letter-spacing: 1px;
 }
+
+/* ================================================================
+   RESPONSIVE BREAKPOINTS
+================================================================ */
+
+/* ── Tablet landscape / small desktop (≤ 1024px) ──────────────── */
+@media (max-width: 1024px) {
+    .nav              { padding: 18px 28px; }
+    .hero             { padding: 60px 28px 48px; gap: 40px; }
+    .tech-strip       { padding: 16px 28px; }
+    .features-section { padding: 60px 28px; }
+    .pipeline-section { padding: 60px 28px; }
+    .stats-strip      { padding: 32px 28px; }
+    .reports-section  { padding: 60px 28px; }
+    .site-footer      { padding: 24px 28px; }
+}
+
+/* ── Tablet portrait (≤ 768px) ─────────────────────────────────── */
+@media (max-width: 768px) {
+    /* Nav */
+    .nav { padding: 14px 20px; }
+    .nav-right { gap: 14px; }
+
+    /* Hero: stack columns */
+    .hero {
+        grid-template-columns: 1fr;
+        padding: 44px 20px 36px;
+        gap: 36px;
+    }
+    .hero-desc { max-width: 100%; }
+    .hero-visual { max-width: 420px; width: 100%; margin: 0 auto; }
+
+    /* Tech strip */
+    .tech-strip { padding: 14px 20px; gap: 14px; }
+
+    /* Features */
+    .features-section { padding: 52px 20px; }
+
+    /* Pipeline: 2×2 on tablet (hide arrows) */
+    .pipeline-section  { padding: 52px 20px; }
+    .pipeline-steps-4  { grid-template-columns: 1fr 1fr; gap: 16px; }
+    .pipeline-steps-4 .pipe-arrow { display: none; }
+
+    /* Stats: 2×2 */
+    .stats-strip  { padding: 28px 20px; }
+    .stats-inner  { grid-template-columns: repeat(2, 1fr); max-width: 100%; }
+    .stat-item    { border-right: none; border-bottom: 1px solid var(--border); padding: 18px 0; }
+    .stat-item:nth-child(odd)  { border-right: 1px solid var(--border); }
+    .stat-item:nth-child(3),
+    .stat-item:nth-child(4)    { border-bottom: none; }
+
+    /* Dataset highlight */
+    .dataset-highlight-section { padding: 44px 20px; }
+
+    /* Reports */
+    .reports-section { padding: 52px 20px; }
+
+    /* Footer: stack */
+    .site-footer {
+        padding: 24px 20px;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+        text-align: center;
+    }
+    .footer-nav { flex-wrap: wrap; justify-content: center; gap: 14px; }
+}
+
+/* ── Mobile (≤ 480px) ──────────────────────────────────────────── */
+@media (max-width: 480px) {
+    /* Nav */
+    .nav { padding: 12px 16px; }
+
+    /* Hero */
+    .hero { padding: 36px 16px 28px; gap: 28px; }
+    .hero-title { letter-spacing: -1px; }
+    .hero-desc  { font-size: 0.95rem; }
+    .hero-cta   { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .btn-primary, .btn-ghost { width: 100%; justify-content: center; }
+
+    /* Tech strip */
+    .tech-strip   { padding: 12px 16px; gap: 8px; }
+    .tech-powered { display: none; }
+
+    /* Features */
+    .features-section  { padding: 40px 16px; }
+    .section-title-main { font-size: 1.55rem; margin-bottom: 36px; }
+
+    /* Pipeline: single column */
+    .pipeline-section { padding: 40px 16px; }
+    .pipeline-steps-4 { grid-template-columns: 1fr; gap: 10px; }
+
+    /* Dataset highlight */
+    .dataset-highlight-section { padding: 36px 16px; }
+    .ds-hl-inner { gap: 24px; }
+
+    /* Reports */
+    .reports-section { padding: 40px 16px; }
+
+    /* Footer */
+    .site-footer    { padding: 20px 16px; }
+    .footer-stack   { display: none; }
+    .footer-nav     { gap: 12px; }
+}

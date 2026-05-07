@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VisionQC — Inspection Report</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -356,6 +357,48 @@
     .clickable-row:hover td { background: rgba(59,130,246,0.07) !important; }
     .expand-hint { font-family: var(--mono); font-size: 0.48rem; color: var(--blue); letter-spacing: 1px; display: block; margin-top: 5px; opacity: 0; transition: opacity 0.2s; }
     .clickable-row:hover .expand-hint { opacity: 1; }
+
+    /* ── RESPONSIVE ────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+        .report-topbar { padding: 12px 24px; }
+        .topbar-center { display: none; }
+        .report-content { padding: 32px 24px 0; }
+        .report-footer { padding: 20px 24px 0; }
+        .summary-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+        .report-topbar { padding: 10px 14px; gap: 8px; }
+        .btn-export { display: none; }
+        .report-content { padding: 20px 14px 0; }
+        .report-footer { flex-direction: column; gap: 6px; text-align: center; padding: 20px 14px 0; }
+        .report-hero { flex-direction: column; gap: 16px; align-items: flex-start; }
+        .verdict-badge { align-self: flex-start; padding: 12px 20px; min-width: auto; }
+        .report-title { font-size: 1.4rem; }
+        .summary-grid { grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 36px; }
+        .sc-value { font-size: 2rem; }
+        .stat-card { padding: 16px 14px 12px; }
+        .sec-header { margin-top: 36px; }
+        .sec-title { font-size: 0.65rem; letter-spacing: 2px; }
+        /* Scrollable tables on small screens */
+        .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        table { min-width: 480px; }
+        #batch-content .table-wrap table { min-width: 640px; }
+        /* viz boxes slightly smaller */
+        .viz-box { width: 60px; height: 60px; }
+        /* Detail modal */
+        #detail-images { flex-direction: column; align-items: center; }
+        .detail-img-col { max-width: 100%; width: 100%; }
+        #detail-info { padding: 0 14px 16px; }
+        #detail-header { padding: 12px 14px; }
+        .detail-info-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    }
+
+    @media (max-width: 420px) {
+        .report-topbar .btn-print { font-size: 0.56rem; padding: 6px 10px; letter-spacing: 0.5px; }
+        .sc-value { font-size: 1.7rem; }
+        .report-eyebrow { font-size: 0.5rem; }
+    }
 
     /* ── PRINT ──────────────────────────────────────────────────── */
     @media print {

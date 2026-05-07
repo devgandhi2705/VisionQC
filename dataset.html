@@ -609,6 +609,31 @@
             .ds-kpi { padding: 14px 18px; min-width: 100px; }
             .ds-kpi-num { font-size: 1.2rem; }
         }
+
+        /* ── Extra mobile polish ─────────────────────────────────── */
+        @media (max-width: 768px) {
+            .ds-hero { padding: 36px 18px 28px; gap: 28px; }
+            .ds-section { padding: 36px 18px 0; }
+            .ead-metrics-row { flex-wrap: wrap; gap: 10px; }
+            .ead-metric { min-width: 120px; flex: 1 1 calc(50% - 10px); }
+            .ds-hero-mosaic-top,
+            .ds-hero-mosaic-bot { grid-template-columns: 1fr 1fr; gap: 6px; }
+            .ds-hero-mosaic-top > *:first-child,
+            .ds-hero-mosaic-bot > *:last-child { grid-column: span 2; }
+        }
+
+        @media (max-width: 480px) {
+            .ds-hero { padding: 28px 14px 22px; }
+            .ds-section { padding: 28px 14px 0; }
+            .ds-section-title { font-size: 1.4rem; }
+            .ds-hero-mosaic-top,
+            .ds-hero-mosaic-bot { grid-template-columns: 1fr; gap: 6px; }
+            .ds-hero-mosaic-top > *:first-child,
+            .ds-hero-mosaic-bot > *:last-child { grid-column: span 1; }
+            .ds-mosaic-cell img { height: 160px; }
+            .source-grid { gap: 16px; }
+            .ds-footer-pad { height: 40px; }
+        }
     </style>
 </head>
 <body class="ds-body">
