@@ -13,7 +13,8 @@ pinned: false
 > Combines **YOLOv8** object detection with **EfficientAD** anomaly analysis to locate and score defects in screws, nuts, and bolts.
 
 **Live Demo Frontend:** Open `index.html` in your browser  
-**Inspector App:** Start the Flask server → open `dashboard.html`
+**Inspector App:** Start the Flask server → open `dashboard.html`  
+**Deployed Demo:** https://devg-01-visionqc.hf.space/index.html
 
 ---
 
